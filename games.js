@@ -14,6 +14,15 @@ const defragDone=()=>PROBE||(st.games.defrag||0)>=DEFRAG_N;
 function swipe(elm,cb){let x0,y0,t0;elm.addEventListener('touchstart',e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY;t0=Date.now()},{passive:true});
  elm.addEventListener('touchend',e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0,ad=Math.max(Math.abs(dx),Math.abs(dy));x0=null;
   if(ad<18)return cb('tap');if(Math.abs(dx)>Math.abs(dy))cb(dx>0?'right':'left',ad,Date.now()-t0);else cb(dy>0?'down':'up',ad,Date.now()-t0)},{passive:true})}
+// Sofortige Wischerkennung schon während der Bewegung
+function swipeLive(elm,o){let x0=null,y0,sx,sy,t0,moved=false;
+ elm.addEventListener('touchstart',e=>{if(e.target.closest('button'))return;const t=e.touches[0];x0=sx=t.clientX;y0=sy=t.clientY;t0=performance.now();moved=false},{passive:true});
+ elm.addEventListener('touchmove',e=>{if(x0==null)return;e.preventDefault();const t=e.touches[0];if(o.move){moved=o.move(t.clientX-x0,t.clientY-y0,(dx,dy)=>{x0+=dx;y0+=dy})||moved;return}
+  const dx=t.clientX-x0,dy=t.clientY-y0,th=o.th||22;if(Math.max(Math.abs(dx),Math.abs(dy))<th)return;moved=true;o.dir(Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up'));x0=t.clientX;y0=t.clientY},{passive:false});
+ elm.addEventListener('touchend',e=>{if(x0==null)return;const t=e.changedTouches[0],dt=performance.now()-t0;if(!moved&&o.tap)o.tap();if(o.end)o.end(t.clientX-sx,t.clientY-sy,dt);x0=null},{passive:true})}
+// Knöpfe reagieren beim Drücken, mit Wiederholung beim Halten
+function pressBtn(b,fn,rep){let iv,to;const stop=()=>{clearTimeout(to);clearInterval(iv)};
+ b.addEventListener('pointerdown',e=>{e.preventDefault();fn();if(rep){to=setTimeout(()=>iv=setInterval(fn,rep),170)}});['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,stop));b.onclick=null}
 function keyHandler(map){const h=e=>{if(!$('#viewer').classList.contains('on'))return;const k=map[e.key];if(k){e.preventDefault();k()}};document.addEventListener('keydown',h);return()=>document.removeEventListener('keydown',h)}
 let gameStop=null;const _closeViewerG=closeViewer;closeViewer=function(){if(gameStop){gameStop();gameStop=null}_closeViewerG()};
 
@@ -35,16 +44,19 @@ MODS.worm=m=>{const COLS=14,ROWS=18;st.games.worm=st.games.worm||[];st.games.wor
  const WALLS=[];const wl=(x0,y0,dx,dy,n)=>{for(let i=0;i<n;i++)WALLS.push([x0+dx*i,y0+dy*i])};
  wl(3,4,1,0,4);wl(8,4,1,0,3);wl(10,8,0,1,4);wl(3,9,0,1,3);wl(1,13,1,0,4);wl(11,14,0,1,2);
  const isWall=(c,rw)=>WALLS.some(w=>w[0]===c&&w[1]===rw);
- let snake,dir,ndir,food,hunter,tick,alive=false,timer=null,step=0,raf;
+ let snake,dir,q=[],lastStep=0,food,hunter,tick,alive=false,timer=null,step=0,raf;
  const easy=()=>st.games.wormFails>=3&&st.games.wormEasy;
  const hud=()=>{$('#wm-c').textContent='BLÖCKE '+st.games.worm.length+'/4'+(easy()?' · LEICHT':'');
   $('#wm-log').innerHTML='<div class="gl-h">Fehlerprotokoll · wiederhergestellt</div>'+ERRS.map((e,i)=>st.games.worm.includes(i)?'<div class="ok"><span>'+e[0]+'</span><b>'+e[1]+'</b>'+esc(e[2])+'</div>':'<div class="no">▒▒:▒▒:▒▒ ▒▒▒▒ verschlüsselt</div>').join('')};
  const free=()=>{for(let t=0;t<200;t++){const c=Math.floor(Math.random()*COLS),rw=Math.floor(Math.random()*ROWS);if(isWall(c,rw)||snake.some(s=>s[0]===c&&s[1]===rw))continue;if(Math.abs(c-snake[0][0])+Math.abs(rw-snake[0][1])<5)continue;if(hunter&&hunter[0]===c&&hunter[1]===rw)continue;return[c,rw]}return[0,0]};
  const nextFood=()=>{const left=ERRS.map((e,i)=>i).filter(i=>!st.games.worm.includes(i));if(!left.length){food=null;return}food={p:free(),i:left[0]}};
- function reset(){snake=[[7,15],[7,16],[7,17]];dir=[0,-1];ndir=dir;hunter=easy()?null:[1,1];step=0;nextFood();hud()}
+ function reset(){snake=[[7,15],[7,16],[7,17]];dir=[0,-1];q=[];hunter=easy()?null:[1,1];step=0;nextFood();hud()}
  function overlay(h,btn,fn){const o=$('#wm-ov');o.innerHTML=h+(btn?'<button class="btn" id="wm-b">'+btn+'</button>':'');o.classList.add('on');const bb=$('#wm-b');if(bb)bb.onclick=fn}
  function start(){$('#wm-ov').classList.remove('on');gameMusic('a/mus_worm.mp3');if(!st.calls.wormIntro){st.calls.wormIntro=1;save();playVo('a/vo_bit_worm.mp3')}sfx('open',.5);alive=true;clearInterval(timer);timer=setInterval(update,easy()?210:150)}
- function turn(d){const D={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[d];if(!D)return;if(D[0]===-dir[0]&&D[1]===-dir[1])return;ndir=D;if(!alive&&!wormDone()&&!$('#wm-b'))start()}
+ function turn(d){const D={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[d];if(!D)return;if(!alive){if(!wormDone()&&!$('#wm-b'))start();else return}const last=q.length?q[q.length-1]:dir;if((D[0]===last[0]&&D[1]===last[1])||(D[0]===-last[0]&&D[1]===-last[1]))return;if(q.length>=3)return;q.push(D);
+  if(q.length===1){const w=Math.max(0,45-(performance.now()-lastStep));clearInterval(timer);clearTimeout(kick);kick=setTimeout(()=>{if(!alive)return;update();if(alive){clearInterval(timer);timer=setInterval(update,curSpeed())}},w)}}
+ let kick;
+ const curSpeed=()=>(easy()?210:150)-st.games.worm.length*12;
  function crash(why){alive=false;clearInterval(timer);st.games.wormFails++;save();sfx('bad',.6);sfx('glitch',.4);tone(90,.35,'sawtooth',.08);cv.classList.add('hit');setTimeout(()=>cv.classList.remove('hit'),400);
   if(why==='echo'&&!st.calls.echoWorm){st.calls.echoWorm=1;save();playVo('a/vo_echo_worm.mp3')}
   let h='<b>Verbindung getrennt</b><p>'+(why==='echo'?'ECHO hat den Wurm erwischt.':why==='self'?'Der Wurm hat sich selbst gebissen.':'Der Wurm ist gegen eine Firewall gekracht.')+' Deine Blöcke bleiben gespeichert.</p>';
@@ -52,11 +64,11 @@ MODS.worm=m=>{const COLS=14,ROWS=18;st.games.worm=st.games.worm||[];st.games.wor
   const o=$('#wm-ov');if(st.games.wormFails>=3&&!st.games.wormEasy){const e=el('button','btn ghost','Leichter Modus: langsamer, ohne ECHO');e.onclick=()=>{st.games.wormEasy=1;save();reset();start()};o.appendChild(e)}
   if(st.games.wormFails>=6){const e=el('button','btn ghost','Bit übernimmt den Wurm');e.onclick=()=>{st.games.worm=[0,1,2,3];save();finish()};o.appendChild(e)}}
  function finish(){alive=false;clearInterval(timer);hud();sfx('ok',.7);overlay('<b>Protokoll wiederhergestellt</b><p>Alle vier Blöcke sind gesichert. Jetzt das Patchfeld.</p>','Zum Patchfeld',()=>{closeViewer();MODS.server(m)})}
- function update(){dir=ndir;step++;tone(step%2?880:660,.015,'square',.012);if(hunter&&step%2===0){const dd=Math.abs(hunter[0]-snake[0][0])+Math.abs(hunter[1]-snake[0][1]);if(dd<=3)tone(140+dd*30,.09,'sawtooth',.05)}const h=[snake[0][0]+dir[0],snake[0][1]+dir[1]];
+ function update(){if(q.length)dir=q.shift();lastStep=performance.now();step++;tone(step%2?880:660,.015,'square',.012);if(hunter&&step%2===0){const dd=Math.abs(hunter[0]-snake[0][0])+Math.abs(hunter[1]-snake[0][1]);if(dd<=3)tone(140+dd*30,.09,'sawtooth',.05)}const h=[snake[0][0]+dir[0],snake[0][1]+dir[1]];
   if(h[0]<0||h[1]<0||h[0]>=COLS||h[1]>=ROWS||isWall(h[0],h[1]))return crash('wall');if(snake.slice(0,-1).some(s=>s[0]===h[0]&&s[1]===h[1]))return crash('self');
   snake.unshift(h);
   if(food&&h[0]===food.p[0]&&h[1]===food.p[1]){st.games.worm.push(food.i);save();[523,659,784].forEach((f,k)=>tone(f,.08,'square',.05,k*.06));snake.push(...Array(2).fill(snake[snake.length-1]));
-   clearInterval(timer);if(st.games.worm.length>=4){hud();return finish()}timer=setInterval(update,(easy()?210:150)-st.games.worm.length*12);nextFood();hud()}else snake.pop();
+   clearInterval(timer);if(st.games.worm.length>=4){hud();return finish()}timer=setInterval(update,curSpeed());nextFood();hud()}else snake.pop();
   if(hunter&&step%3===0){const opts=[[1,0],[-1,0],[0,1],[0,-1]].map(d=>[hunter[0]+d[0],hunter[1]+d[1]]).filter(p=>p[0]>=0&&p[1]>=0&&p[0]<COLS&&p[1]<ROWS&&!isWall(p[0],p[1])&&!(food&&p[0]===food.p[0]&&p[1]===food.p[1]));
    opts.sort((a,c)=>(Math.abs(a[0]-h[0])+Math.abs(a[1]-h[1]))-(Math.abs(c[0]-h[0])+Math.abs(c[1]-h[1])));if(opts.length)hunter=Math.random()<.75?opts[0]:opts[Math.floor(Math.random()*opts.length)]}
   if(hunter&&snake.some(s=>s[0]===hunter[0]&&s[1]===hunter[1]))return crash('echo')}
@@ -72,10 +84,10 @@ MODS.worm=m=>{const COLS=14,ROWS=18;st.games.worm=st.games.worm||[];st.games.wor
    x.fillStyle='#ff3d5a';x.beginPath();x.arc(px+Math.cos(ang)*cs*.13,py+Math.sin(ang)*cs*.13,cs*.13,0,7);x.fill();x.lineWidth=1}
   x.fillStyle='rgba(0,0,0,.12)';for(let y=0;y<cs*ROWS;y+=3)x.fillRect(0,y,cs*COLS,1);
   raf=requestAnimationFrame(draw)}
- swipe(cv,d=>d!=='tap'&&turn(d));$$('.gm-pad button').forEach(bt=>bt.onclick=()=>turn(bt.dataset.d));
+ swipeLive($('.gm.worm'),{dir:turn,th:20});$$('.worm .gm-pad button').forEach(bt=>pressBtn(bt,()=>turn(bt.dataset.d)));
  const unk=keyHandler({ArrowUp:()=>turn('up'),ArrowDown:()=>turn('down'),ArrowLeft:()=>turn('left'),ArrowRight:()=>turn('right'),w:()=>turn('up'),s:()=>turn('down'),a:()=>turn('left'),d:()=>turn('right')});
- gameStop=()=>{clearInterval(timer);cancelAnimationFrame(raf);unk();backMusic()};
- reset();raf=requestAnimationFrame(draw);window.__wm={get s(){return snake},set s(v){snake=v},get f(){return food},set d(v){dir=ndir=v},update:()=>update(),get alive(){return alive}};
+ gameStop=()=>{clearInterval(timer);clearTimeout(kick);cancelAnimationFrame(raf);unk();backMusic()};
+ reset();raf=requestAnimationFrame(draw);window.__wm={get s(){return snake},set s(v){snake=v},get f(){return food},set d(v){dir=v;q=[]},update:()=>update(),get alive(){return alive}};
  $('#wm-foot').textContent='Wischen, Pfeiltasten oder die Knöpfe. Firewalls und ECHOs Auge meiden.';
  if(wormDone()&&!PROBE)return finish();
  overlay('<b>Bits Datenwurm</b><p>Sammle die vier goldenen Protokollblöcke. Rote Firewalls, die Wand und dein eigener Schwanz beenden die Verbindung. Das rote Auge ist ECHO.</p>','Wurm starten',()=>start())};
@@ -136,8 +148,8 @@ MODS.defrag=m=>{const C=10,R=16;st.games.defrag=st.games.defrag||0;st.games.defr
    cells(cur).forEach(([a,b])=>{if(b>=0){x.shadowColor=PCOL[cur.k];x.shadowBlur=10;draw1(x,a*cs,b*cs,cs,PCOL[cur.k],glyph(a,b));x.shadowBlur=0}})}
   flash=flash.filter(f=>t-f.t<350);flash.forEach(f=>{x.fillStyle='rgba(127,231,255,'+(1-(t-f.t)/350)*.7+')';x.fillRect(0,f.i*cs,cs*C,cs)});
   x.fillStyle='rgba(0,0,0,.12)';for(let y=0;y<cs*R;y+=3)x.fillRect(0,y,cs*C,1);raf=requestAnimationFrame(draw)}
- swipe(cv,(d,ad)=>{if(d==='tap')return act('rot');if(d==='left'||d==='right'){const n=Math.max(1,Math.round(ad/cs));for(let i=0;i<n;i++)act(d)}if(d==='down')act('drop');if(d==='up')act('rot')});
- $$('.gm-pad.df button').forEach(bt=>bt.onclick=()=>act(bt.dataset.a));
+ let soft=0;swipeLive($('.gm.defrag'),{move:(dx,dy,shift)=>{const st2=cs*.8;let m=false;while(dx>=st2){act('right');dx-=st2;shift(st2,0);m=true}while(dx<=-st2){act('left');dx+=st2;shift(-st2,0);m=true}if(dy>=cs){act('down');shift(0,cs);soft++;m=true}return m},tap:()=>act('rot'),end:(dx,dy,dt)=>{if(dy>70&&dt<260&&Math.abs(dy)>Math.abs(dx)*1.5)act('drop');else if(dy<-50&&dt<300)act('rot');soft=0}});
+ $$('.gm-pad.df button').forEach(bt=>{const a=bt.dataset.a;pressBtn(bt,()=>act(a),(a==='left'||a==='right'||a==='down')?55:0)});
  const unk=keyHandler({ArrowLeft:()=>act('left'),ArrowRight:()=>act('right'),ArrowDown:()=>act('down'),ArrowUp:()=>act('rot'),' ':()=>act('drop')});
  gameStop=()=>{clearInterval(timer);cancelAnimationFrame(raf);unk();backMusic()};
  reset();words();raf=requestAnimationFrame(draw);window.__df={get g(){return grid},get cur(){return cur},set cur(v){cur=v},mk,act,start};
