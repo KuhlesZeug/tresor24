@@ -1,0 +1,73 @@
+// Akt 4: Tag 19 bis 24, dazu Papierbezug für Tag 6, 9, 15 und 18
+const PROJ=[['ANKER','Verkehrssteuerung. Hält alle Ampeln der Stadt im Takt und greift bei Staus ein.','eingestellt 2018'],['KOMPASS','Navigation. Lenkt jeden Bürger auf den schnellsten Weg, ob er will oder nicht.','läuft'],['LEUCHTTURM','Frühwarnung. Zeigt Gefahren, bevor sie passieren. Greift nie selbst ein und hört niemandem zu.','eingestellt 2020, Leitung M. O., Quellcode beschlagnahmt'],['SEXTANT','Standortanalyse. Misst jeden Schritt jedes Bürgers.','läuft'],['NEBELHORN','Lautsprechernetz für Durchsagen an jeder Straßenecke.','läuft']];
+const NOTFUNK='YOBOZ TFSW. YSBBKCFH BSIGHOFH';
+const DIAL=[12,36,7];
+const KLOPF='LICHT';
+const TAP=['ABCDE','FGHIJ','LMNOP','QRSTU','VWXYZ'];
+
+Object.assign(window.DAYS,{
+19:{h:['4966ffa48a9010972a8236087fb1b140e0aa4605aed1da9cbcc9a687d3103cb9','63c118493b3a6508d9125fadbff844cbc27f7a22eba6afa4d9b41e2bffac8c02'],who:'mira',vo:'a/vo_d19.mp3',
+ text:'ECHO hat mit dir gesprochen, oder, {CN}? Bit hat in der Nacht ihren Erinnerungsspeicher geöffnet. Ganz alte Daten, älter als Aurelion selbst. Hör sie dir an. Und dann sag mir, wie das Projekt hieß, aus dem sie entstanden ist. Das Projektarchiv liegt in deiner Akte.',
+ mods:[{t:'memory',ic:'audio',b:'ECHOs Erinnerungen',s:'Speicherblock 0001, wiederhergestellt'},{t:'print',ic:'doc',b:'Projektarchiv Aurelion',s:'Einsatzakte, Blatt 19',doc:'projekte'}],
+ hints:['Hör auf ECHOs zweite Erinnerung: Wofür wurde sie gebaut?','Sie sollte niemanden lenken, niemandem zuhören und nur zeigen, wo die Felsen sind. Welches Projekt im Archiv warnt, ohne einzugreifen? Kompass lenkt, Sextant misst, das andere warnt.','Das Projekt hieß LEUCHTTURM. Leitung: M. O., also Mira Okafor.'],
+ reveal:{who:'mira',vo:'a/vo_d19r.mp3',text:'Leuchtturm. Ich habe sie gebaut. Vor sechs Jahren. Sie sollte warnen, nicht lauschen. Halden hat sie mir weggenommen und ECHO genannt. Und die Schneeeule. Weiß. Sieht im Dunkeln. Hört alles. Das ist sie. Das war die ganze Zeit sie.'}},
+20:{h:'45b151ce8d326e45e5f3216695c9b125a96a177d8f9dafa6fad70c83c7076b9c',who:'henrik',vo:'a/vo_d20.mp3',
+ text:'Bit ist weg, {CN}. Sie haben ihn. Und deine App hat es auch erwischt, oder? Kein Grund zur Panik. Ich hab dir einen Notfallfunk geschickt. Verschiebung: die Summe deiner Fragmente. Nimm die Scheibe. Dann starten wir neu.',
+ mods:[{t:'notfunk',ic:'radio',b:'Notfallfunk H.',s:'Empfangen 03:12 Uhr, verschlüsselt'},{t:'wheel',ic:'key',b:'Decoderscheibe',s:'Die aus deiner Akte, Blatt 23'}],
+ hints:['Deine Fragmente stehen in der Einsatzakte unter Fragmente. Zähl sie zusammen.','5 + 1 + 8 = 14. Stell die Scheibe auf 14: Unter dem äußeren A steht innen das O. Such jeden Buchstaben innen und lies außen ab. Aus Y wird K.','Der Funk heißt: KANAL FREI. KENNWORT NEUSTART. Die Lösung ist NEUSTART.'],
+ onOpen:{t:'crash',once:'d20crash',delay:1200,vo:'a/vo_bit_cut.mp3'},
+ reveal:{who:'henrik',vo:'a/vo_d20r.mp3',text:'Neustart. Gut. Die Leitung steht wieder. Wir machen weiter. Für Bit.'}},
+21:{h:['69331da682fa3b0e258e422f5750b27423f4de061a9125f9d57ff8e63d600483','8b96c1dd19d468917e95cf980a44d5435af5b76ceef605c7873b27ae89c10d02','35254ecbe6ff2fa300ae6188ec9ebe5c58d34a55597e470d5e313a190dcc784c','c616c6fa9171a62472c561e366c227aa7a5d92363b1185a7f417533b684debca'],who:'mira',vo:'a/vo_d21.mp3',
+ text:'Bit sitzt im Serverkeller, {CN}. Wir holen ihn. Aber erst brauchen wir den Vorraum des Tresors. Dort steht eine Eule aus Bronze auf einer Gewichtsplatte. Nimmst du sie weg, geht der Alarm los. Henrik hat Gegengewichte, aber wir müssen wissen, wie schwer die Eule ist. Das verraten nur die alten Waagen aus dem Keller. Und noch etwas: Die Übergabe ist am 24. um 18 Uhr. Trag sie dir ein. Echt.',
+ mods:[{t:'plate',ic:'key',b:'Gewichtsplatte',s:'Gegengewicht in Gramm einstellen'},{t:'print',ic:'doc',b:'Waagen im Kellerarchiv',s:'Einsatzakte, Blatt 20',doc:'waagen'},{t:'ics',ic:'doc',b:'Übergabe eintragen',s:'24. Dezember, 18 Uhr, in deinen echten Kalender'}],
+ hints:['Fang bei der Waage an, auf der eine Zahl steht. Daraus folgt das Gewicht des Ankers, und daraus das der Eule.','Eine Kerze wiegt 250 g. Ein Anker wiegt so viel wie drei Kerzen, also 750 g. Die Eule wiegt so viel wie vier Anker und drei Kerzen.','4 mal 750 g plus 3 mal 250 g ergibt 3750 g. Stell 3750 ein.'],
+ reveal:{who:'mira',vo:'a/vo_d21r.mp3',text:'3750 Gramm. Henrik tauscht die Eule, und die Platte merkt nichts. Der Vorraum ist offen. Bit, wir kommen.'}},
+22:{h:['e5651f93350a0f242367bfe7e3e13238d10a062bd1e82cca0490385308a5be34','1ae657a4c900cbee74ba95bdbdf9f18ebbbbb78a690b25d962480de0f85bb5b8'],who:'henrik',vo:'a/vo_d22.mp3',
+ text:'Die äußere Tür, {CN}. Mein altes Zahlenschloss. Ohne Strom, ohne PIN. Halden hat es nie verstanden. Setz Kopfhörer auf. Dreh langsam. Bei den richtigen Zahlen klickt es anders. Drei Zahlen. In welcher Reihenfolge, steht in meinen Notizen.',
+ mods:[{t:'dial',ic:'lock',b:'Zahlenschloss Sallmann 1987',s:'Kopfhörer empfohlen'},{t:'print',ic:'doc',b:'Henriks Notizen',s:'Einsatzakte, Blatt 21',doc:'notizen'}],
+ hints:['Kopfhörer auf und langsam drehen. Bei drei Zahlen klingt der Klick tiefer und lauter. Ab jetzt leuchtet dort zusätzlich ein Licht.','Die drei Zahlen sind 7, 12 und 36. Die Reihenfolge steht in Henriks Notizen.','Erste Zahl zwischen 10 und 20: 12. Zweite die größte: 36. Dritte die kleinste: 7. Gib 12 36 7 ein.'],
+ reveal:{who:'henrik',vo:'a/vo_d22r.mp3',text:'12, 36, 7. Hörst du das? Das ist das schönste Geräusch der Welt. Die äußere Tür ist offen.'}},
+23:{h:'0ef5d35bc767080cf9f3375aeb6919927c419685eb3618ffa5c1f0d091b02cd7',who:'mira',vo:'a/vo_d23.mp3',
+ text:'Noch ein Tag, {CN}. Der Countdown läuft. Bit sitzt in einer Zelle im Keller, und er klopft. Gegen ein Rohr, immer wieder dasselbe. Henrik sagt, das ist der Klopfcode aus alten Gefängnissen. Die Tafel liegt in deiner Akte. Was klopft er? Wenn wir es wissen, öffnet sich seine Tür.',
+ mods:[{t:'knock',ic:'audio',b:'Klopfen aus Zelle 3',s:'Serverkeller, Mikrofon von Henrik'},{t:'print',ic:'doc',b:'Klopfcode Tafel',s:'Einsatzakte, Blatt 22',doc:'klopf'}],
+ hints:['Jeder Buchstabe besteht aus zwei Klopfgruppen: erst die Zeile der Tafel, dann die Spalte. Zwischen den Buchstaben ist eine längere Pause.','Die ersten Klopfer sind 3 und 1, das ist L. Dann 2 und 4, das ist I.','Bit klopft 3·1, 2·4, 1·3, 2·3, 4·4. Das ergibt LICHT.'],
+ reveal:{who:'mira',vo:'',text:'Licht. Die Zellentür springt auf. Halt dein Handy bereit, {CN}.'},
+ after:{t:'seq',once:'d23seq',delay:2500,steps:[{t:'call',name:'Bit',who:'bit',img:'a/v_bit.jpg',vo:'a/vo_call_d23.mp3',mailbox:true,mbVo:'a/vo_mb_d23.mp3',
+  mbText:'Bit hier! Ich bin raus, ihr habt es geschafft! Und Fragment vier hatte ich die ganze Zeit im Schuh, es liegt jetzt in deiner Akte. Morgen ist Heiligabend. Lass uns das zu Ende bringen.',
+  lines:['Licht! Ihr habt es verstanden! Die Tür ist auf, ich bin raus!','Und rate mal, was ich die ganze Zeit im Schuh hatte? Fragment vier.','Halden hat überall gesucht, nur nicht in meinen Socken.','Morgen ist Heiligabend. Lass uns das zu Ende bringen.'],
+  frag:{n:4,v:'3',act:'Akt 4 · Bit ist frei'}}]}},
+24:{h:'6e81a4f468047b1bf813d3c41abeef85fe9f5e1c6730d573c1155133681b049c',who:'echo',vo:'a/vo_d24.mp3',
+ text:'Heute ist Heiligabend, {CN}. Um Mitternacht startet Stille Nacht. Nur ich kann es abschalten. Und ich tue es nur für jemanden, der die ganze Geschichte kennt. Drei Fragen. Dann der Code aus deinen vier Fragmenten.',
+ mods:[{t:'quiz',ic:'eye',b:'ECHOs drei Fragen',s:'Erst danach öffnet sich das Tresorschloss'}],
+ gate:()=>!!st.calls.d24quiz,gateMsg:'ECHO wartet noch auf deine Antworten. Beantworte zuerst ihre drei Fragen.',
+ hints:['Beantworte zuerst ECHOs drei Fragen. Alles kam in den letzten Wochen vor.','Der Code besteht aus deinen vier Fragmenten in der Reihenfolge 1 bis 4. Sie stehen in deiner Einsatzakte.','Fragment 1 ist 5, Fragment 2 ist 1, Fragment 3 ist 8, Fragment 4 ist 3. Der Code ist 5183.'],
+ reveal:{who:'echo',vo:'',text:'Code akzeptiert.'},
+ after:{t:'finale',once:'d24fin',delay:600}}
+});
+
+// Papierbezug: Tag 6 Sternkarte auf Papier, Tag 18 Prüfbogen
+DAYS[6].mods[1]={t:'print',ic:'doc',b:'Sternkarte Dezember',s:'Einsatzakte, Blatt 7',doc:'sterne'};
+DAYS[6].hints[1]='Die Nachricht lautet: Der Jäger steht am Winterhimmel. Drei Sterne bilden seinen Gürtel. Such auf der Sternkarte in deiner Akte das Sternbild mit dem Gürtel.';
+Object.assign(DAYS[18],{vo:'a/vo_d18.mp3',text:'Eine Frage, {CN}, die nur ein Mensch beantwortet, ohne zu rechnen. Ich darf sie nicht aussprechen. So hat man mich gebaut. Aber jemand hat sie vor langer Zeit aufgeschrieben. Auf Papier. Sie liegt in deiner Akte. Prüfbogen, Frage 18.',
+ mods:[{t:'print',ic:'doc',b:'Prüfbogen L.',s:'Einsatzakte, Blatt 18',doc:'pruef'}],
+ hints:['Nimm den Prüfbogen aus deiner Akte und lies Frage 18.','Frage 18 lautet: Was wird nasser, je mehr es trocknet? Denk an dein Badezimmer.','Die Antwort ist HANDTUCH.']});
+DAYS[9].hints[1]='Henrik will das Jahr, in dem er den Tresor gebaut hat, und zwar rückwärts. Das Jahr steht in seiner Personalakte. Kein Telefon zur Hand? Unter Henriks Anschluss kannst du die Ansage jetzt auch hier abspielen.';
+
+// Druckseiten
+function skySVG(){let r=11;const rnd=()=>(r=(r*9301+49297)%233280)/233280;let s='<svg viewBox="0 0 360 300" class="sky" role="img" aria-label="Sternkarte">';
+ for(let i=0;i<140;i++)s+='<circle cx="'+(rnd()*360).toFixed(1)+'" cy="'+(rnd()*300).toFixed(1)+'" r="'+(rnd()*.9+.3).toFixed(2)+'" class="bg"/>';
+ const C=[['ORION',[[236,124],[212,150],[264,146],[228,196],[240,199],[252,202],[214,250],[266,246]],[[0,1],[0,2],[1,3],[2,5],[3,4],[4,5],[3,6],[5,7]],[240,276]],['STIER',[[110,120],[130,140],[146,150],[132,160],[100,160],[80,100]],[[0,1],[1,2],[2,3],[3,4],[0,5]],[110,186]],['ZWILLINGE',[[300,40],[318,46],[290,90],[312,96],[284,130],[306,136]],[[0,2],[2,4],[1,3],[3,5]],[300,26]],['KASSIOPEIA',[[30,40],[52,60],[74,46],[96,66],[120,50]],[[0,1],[1,2],[2,3],[3,4]],[75,28]],['GROSSER WAGEN',[[20,226],[44,232],[66,244],[90,250],[98,276],[62,280]],[[0,1],[1,2],[2,3],[3,4],[4,5],[5,2]],[60,212]]];
+ C.forEach(([n,P,E,L])=>{E.forEach(([a,b])=>s+='<line x1="'+P[a][0]+'" y1="'+P[a][1]+'" x2="'+P[b][0]+'" y2="'+P[b][1]+'" class="cl"/>');P.forEach(p=>s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="2.6" class="st"/>');s+='<text x="'+L[0]+'" y="'+L[1]+'" text-anchor="middle" class="cn">'+n+'</text>'});return s+'</svg>'}
+function waagenSVG(){const pan=(x,y,items)=>{let o='';for(let r=0;r*4<items.length;r++){const row=items.slice(r*4,r*4+4),sp=24;row.forEach((it,k)=>{o+='<g transform="translate('+(x-((row.length-1)*sp/2)+k*sp).toFixed(1)+' '+(y-r*40)+') scale(1.3)">'+ICONW[it]+'</g>'})}return o};
+ const scale=(y,L,R,lab)=>'<g transform="translate(0 '+(y+30)+')"><line x1="40" y1="60" x2="320" y2="60" class="beamw"/><path d="M180 60 L170 110 L190 110Z" class="post"/><rect x="150" y="110" width="60" height="6" rx="2" class="post"/><circle cx="180" cy="60" r="5" class="post"/><path d="M40 60 L20 92 H120 L100 60" class="pan"/><path d="M260 60 L240 92 H340 L320 60" class="pan"/>'+pan(70,78,L)+pan(290,78,R)+'<text x="180" y="138" text-anchor="middle" class="wl">'+lab+'</text></g>';
+ return '<svg viewBox="0 0 360 500" class="waage" role="img" aria-label="Drei Waagen im Gleichgewicht">'+scale(0,['anker'],['kerze','kerze','kerze'],'Waage 1')+scale(165,['eule'],['anker','anker','anker','anker','kerze','kerze','kerze'].slice(0,7),'Waage 2')+scale(330,['kerze'],['gew'],'Waage 3')+'</svg>'}
+const ICONW={kerze:'<rect x="-5" y="-22" width="10" height="22" rx="2" fill="#f3e3c3" stroke="#6b5a3a"/><path d="M0 -30 q4 4 0 8 q-4 -4 0 -8" fill="#f59e0b"/>',anker:'<path d="M0 -26 v24 M-10 -8 q10 12 20 0 M-6 -22 h12" stroke="#33475b" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="0" cy="-28" r="3" fill="none" stroke="#33475b" stroke-width="2"/>',eule:'<ellipse cx="0" cy="-16" rx="12" ry="16" fill="#9a6b2f" stroke="#5a3d16"/><circle cx="-5" cy="-21" r="4" fill="#f6e7c8"/><circle cx="5" cy="-21" r="4" fill="#f6e7c8"/><circle cx="-5" cy="-21" r="1.6"/><circle cx="5" cy="-21" r="1.6"/><path d="M-8 -32 l3 5 M8 -32 l-3 5" stroke="#5a3d16" stroke-width="2"/>',gew:'<path d="M-12 0 L-9 -18 H9 L12 0Z" fill="#555" stroke="#222"/><text x="0" y="-6" text-anchor="middle" fill="#fff" font-size="7" font-weight="700">250 g</text>'};
+
+Object.assign(window.DOCS,{
+ sterne:'<div class="doc"><span class="stamp">AKTE 6</span><h3>Himmel über Lumenstadt</h3><p>Sternkarte für den Dezember, 22 Uhr, Blick nach Süden.</p>'+skySVG()+'</div>',
+ pruef:'<div class="doc"><span class="stamp">PRÜFBOGEN L.</span><h3>Fragen, die nur ein Mensch ohne Rechnen beantwortet</h3><p class="small2">Für die Abnahme. Nicht digitalisieren. M. O., März 2019</p><ol class="pq"><li value="3">Was hat Zähne, kann aber nicht beißen?</li><li value="7">Was gehört dir, wird aber von anderen viel öfter benutzt als von dir?</li><li value="11">Je mehr du davon wegnimmst, desto größer wird es. Was ist es?</li><li value="18">Was wird nasser, je mehr es trocknet?</li><li value="21">Was reist um die ganze Welt und bleibt doch immer in seiner Ecke?</li></ol><p class="small2">Die Fragen 22 bis 24 stellt sie selbst. Wenn sie so weit ist.</p></div>',
+ projekte:'<div class="doc"><span class="stamp">ARCHIV</span><h3>Aurelion Projektarchiv 2015 bis 2020</h3><table class="wt pj">'+PROJ.map(([n,d,s])=>'<tr><td><b>'+n+'</b></td><td style="text-align:left">'+d+'<br><small>'+s+'</small></td></tr>').join('')+'</table></div>',
+ waagen:'<div class="doc"><span class="stamp">AKTE 21</span><h3>Waagen im Kellerarchiv</h3><p>Drei alte Balkenwaagen, alle im Gleichgewicht. Henrik hat die Kerzen und Anker mitgebracht. Auf der Eule steht kein Gewicht.</p>'+waagenSVG()+'</div>',
+ notizen:'<div class="doc note"><h3>Notizen H. S., Schloss 1987</h3><p class="hand">Drei Zahlen, null bis neununddreißig.<br>Die erste liegt zwischen zehn und zwanzig.<br>Die zweite ist die größte.<br>Die dritte ist die kleinste.<br>Hör auf das Klacken, nicht auf die Augen.</p></div>',
+ klopf:'<div class="doc"><span class="stamp">AKTE 23</span><h3>Klopfcode</h3><p>Jeder Buchstabe besteht aus zwei Klopfgruppen: erst die Zeile, dann die Spalte. C steht auch für K.</p><table class="wt tap"><tr><th></th>'+[1,2,3,4,5].map(i=>'<th>'+i+'</th>').join('')+'</tr>'+TAP.map((r,i)=>'<tr><th>'+(i+1)+'</th>'+r.split('').map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</table></div>'
+});

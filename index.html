@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tresor 24 · Operation Stille Nacht</title>
+<meta name="theme-color" content="#04060b">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<canvas id="fx-rain"></canvas>
+<div id="scan"></div>
+
+<!-- 0 Verbindung -->
+<section id="s-boot" class="screen on">
+  <div class="boot">
+    <div class="boot-logo"><svg viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="nl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3cf2b5"/><stop offset="1" stop-color="#7fe7ff"/></linearGradient></defs><circle cx="60" cy="60" r="54" fill="none" stroke="url(#nl)" stroke-width="2" opacity=".5"/><circle cx="60" cy="60" r="44" fill="none" stroke="url(#nl)" stroke-width="1" stroke-dasharray="3 6"/><path d="M60 14 L66 54 L106 60 L66 66 L60 106 L54 66 L14 60 L54 54 Z" fill="url(#nl)" opacity=".9"/></svg></div>
+    <pre id="boot-log" class="boot-log"></pre>
+    <button id="btn-boot" class="btn big hide">Kanal öffnen</button>
+    <p class="boot-hint">Ton an. Mit Kopfhörern wird es dichter.</p>
+  </div>
+</section>
+
+<!-- 1 Start -->
+<section id="s-start" class="screen">
+  <div class="city"></div>
+  <div class="start">
+    <div class="kick">Ein Rätsel Adventskalender</div>
+    <h1 class="logo"><span class="l1">TRESOR</span><span class="l2">24</span></h1>
+    <div class="sub">Operation Stille Nacht</div>
+    <p id="giftline" class="giftline"></p>
+    <div class="form">
+    <div id="codebox" class="field">
+      <label for="code">Zugangscode aus deiner Einsatzakte</label>
+      <input id="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Zugangscode">
+    </div>
+    <div id="cnbox" class="field">
+      <label for="cn">Dein Codename</label>
+      <select id="cn"></select>
+    </div>
+    <button id="btn-start" class="btn big">Einsatz beginnen</button>
+    <p class="small">Dein Fortschritt bleibt auf diesem Handy. Spiel deshalb immer hier und nicht im privaten Modus.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 Film -->
+<section id="s-film" class="screen">
+  <div class="film" id="film"></div>
+  <div class="film-sub" id="film-sub"></div>
+  <div class="film-bar"><i id="film-prog"></i></div>
+  <button class="btn ghost sm film-skip" id="btn-skip">Überspringen</button>
+</section>
+
+<!-- 3 Tower -->
+<section id="s-tower" class="screen">
+  <header class="top">
+    <div><div class="kick" id="tw-kick">Agent</div><div class="title">Aurelion Tower</div></div>
+    <div class="topbtns"><button id="btn-akte" class="icon" title="Einsatzakte" aria-label="Einsatzakte"></button><button id="btn-sound" class="icon" title="Ton" aria-label="Ton"></button></div>
+  </header>
+  <div class="tw-wrap">
+    <div class="tw-status" id="tw-status"></div>
+    <div class="tower" id="tower"></div>
+  </div>
+  <p class="foot" id="tw-foot"></p>
+</section>
+
+<!-- 4 Tag -->
+<section id="s-day" class="screen">
+  <header class="top">
+    <button class="icon back" id="btn-back" title="Zurück" aria-label="Zurück"></button>
+    <div class="ttl"><div class="kick" id="day-kick"></div><div class="title" id="day-title"></div></div>
+    <div class="topbtns"><button id="btn-akte2" class="icon" title="Einsatzakte" aria-label="Einsatzakte"></button></div>
+  </header>
+  <div class="day-in">
+    <div class="radio" id="radio"></div>
+    <div class="mods" id="mods"></div>
+    <div class="term" id="term">
+      <div class="term-h"><span>Terminal</span><span class="term-st" id="term-st">wartet auf Eingabe</span></div>
+      <div class="term-row"><span class="pr">&gt;</span><input id="daycode" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Code eingeben"><button class="btn" id="btn-check">Senden</button></div>
+      <div class="hints" id="hints"></div>
+    </div>
+    <div class="reveal" id="reveal"></div>
+  </div>
+</section>
+
+<!-- 5 Akte -->
+<section id="s-akte" class="screen">
+  <header class="top">
+    <button class="icon back" id="btn-akte-back" title="Zurück" aria-label="Zurück"></button>
+    <div class="ttl"><div class="kick">NORDLICHT</div><div class="title">Einsatzakte</div></div>
+    <div class="topbtns"></div>
+  </header>
+  <div class="akte-tabs" id="akte-tabs"></div>
+  <div class="akte-page" id="akte-page"></div>
+</section>
+
+<!-- Ebenen -->
+<div id="viewer" class="viewer" aria-hidden="true"><div class="v-box"><button class="icon v-close" id="v-close" title="Schließen" aria-label="Schließen"></button><div id="v-body"></div></div></div>
+<div id="call" class="call" aria-hidden="true"></div>
+<div id="glitch" class="glitch" aria-hidden="true"></div>
+<div id="banner" class="banner"></div>
+<div id="toast" class="toast"></div>
+
+<script src="gate.js?v=1"></script>
+<script src="engine.js?v=1"></script>
+<script src="fx.js?v=1"></script>
+<script src="days.js?v=1"></script>
+<script src="days2.js?v=1"></script>
+<script src="days3.js?v=1"></script>
+<script src="days4.js?v=1"></script>
+<script src="days5.js?v=1"></script>
+<script src="main.js?v=1"></script>
+<script src="mods.js?v=1"></script>
+<script src="mods2.js?v=1"></script>
+<script src="mods3.js?v=1"></script>
+<script src="mods4.js?v=1"></script>
+<script src="films.js?v=1"></script>
+<script src="komplize.js?v=1"></script>
+<script src="tower.js?v=1"></script>
+<script src="guide.js?v=1"></script>
+</body>
+</html>
