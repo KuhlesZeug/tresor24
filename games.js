@@ -65,7 +65,7 @@ MODS.worm=m=>{const COLS=14,ROWS=18;st.games.worm=st.games.worm||[];st.games.wor
   if(st.games.wormFails>=6){const e=el('button','btn ghost','Bit übernimmt den Wurm');e.onclick=()=>{st.games.worm=[0,1,2,3];save();finish()};o.appendChild(e)}}
  function finish(){alive=false;clearInterval(timer);hud();sfx('ok',.7);overlay('<b>Protokoll wiederhergestellt</b><p>Alle vier Blöcke sind gesichert. Jetzt das Patchfeld.</p>','Zum Patchfeld',()=>{closeViewer();MODS.server(m)})}
  function update(){if(q.length)dir=q.shift();lastStep=performance.now();step++;tone(step%2?880:660,.015,'square',.012);if(hunter&&step%2===0){const dd=Math.abs(hunter[0]-snake[0][0])+Math.abs(hunter[1]-snake[0][1]);if(dd<=3)tone(140+dd*30,.09,'sawtooth',.05)}const h=[snake[0][0]+dir[0],snake[0][1]+dir[1]];
-  if(h[0]<0||h[1]<0||h[0]>=COLS||h[1]>=ROWS||isWall(h[0],h[1]))return crash('wall');if(snake.slice(0,-1).some(s=>s[0]===h[0]&&s[1]===h[1]))return crash('self');
+  h[0]=(h[0]+COLS)%COLS;h[1]=(h[1]+ROWS)%ROWS;if(isWall(h[0],h[1]))return crash('wall');if(snake.slice(0,-1).some(s=>s[0]===h[0]&&s[1]===h[1]))return crash('self');
   snake.unshift(h);
   if(food&&h[0]===food.p[0]&&h[1]===food.p[1]){st.games.worm.push(food.i);save();[523,659,784].forEach((f,k)=>tone(f,.08,'square',.05,k*.06));snake.push(...Array(2).fill(snake[snake.length-1]));
    clearInterval(timer);if(st.games.worm.length>=4){hud();return finish()}timer=setInterval(update,curSpeed());nextFood();hud()}else snake.pop();
@@ -82,15 +82,16 @@ MODS.worm=m=>{const COLS=14,ROWS=18;st.games.worm=st.games.worm||[];st.games.wor
   if(snake){const [hx,hy]=snake[0];x.fillStyle='#04201a';const ex=dir[0]*cs*.15,ey=dir[1]*cs*.15,ox=dir[1]?cs*.18:0,oy=dir[0]?cs*.18:0;[[1],[-1]].forEach(([sg])=>{x.beginPath();x.arc(hx*cs+cs/2+ex+ox*sg,hy*cs+cs/2+ey+oy*sg,cs*.09,0,7);x.fill()})}
   if(hunter){const px=hunter[0]*cs+cs/2,py=hunter[1]*cs+cs/2,h=snake[0],ang=Math.atan2(h[1]-hunter[1],h[0]-hunter[0]);x.shadowColor='#ff3d5a';x.shadowBlur=16;x.strokeStyle='#ff3d5a';x.lineWidth=2.4;x.beginPath();x.arc(px,py,cs*.38,0,7);x.stroke();x.shadowBlur=0;
    x.fillStyle='#ff3d5a';x.beginPath();x.arc(px+Math.cos(ang)*cs*.13,py+Math.sin(ang)*cs*.13,cs*.13,0,7);x.fill();x.lineWidth=1}
+  x.strokeStyle='rgba(127,231,255,'+(.25+.2*Math.sin(t/300))+')';x.lineWidth=2;x.setLineDash([6,8]);x.lineDashOffset=-t/40;x.strokeRect(1,1,cs*COLS-2,cs*ROWS-2);x.setLineDash([]);x.lineWidth=1;
   x.fillStyle='rgba(0,0,0,.12)';for(let y=0;y<cs*ROWS;y+=3)x.fillRect(0,y,cs*COLS,1);
   raf=requestAnimationFrame(draw)}
  swipeLive($('.gm.worm'),{dir:turn,th:20});$$('.worm .gm-pad button').forEach(bt=>pressBtn(bt,()=>turn(bt.dataset.d)));
  const unk=keyHandler({ArrowUp:()=>turn('up'),ArrowDown:()=>turn('down'),ArrowLeft:()=>turn('left'),ArrowRight:()=>turn('right'),w:()=>turn('up'),s:()=>turn('down'),a:()=>turn('left'),d:()=>turn('right')});
  gameStop=()=>{clearInterval(timer);clearTimeout(kick);cancelAnimationFrame(raf);unk();backMusic()};
  reset();raf=requestAnimationFrame(draw);window.__wm={get s(){return snake},set s(v){snake=v},get f(){return food},set d(v){dir=v;q=[]},update:()=>update(),get alive(){return alive}};
- $('#wm-foot').textContent='Wischen, Pfeiltasten oder die Knöpfe. Firewalls und ECHOs Auge meiden.';
+ $('#wm-foot').textContent='Wischen, Pfeiltasten oder die Knöpfe. Am Rand geht es auf der anderen Seite weiter.';
  if(wormDone()&&!PROBE)return finish();
- overlay('<b>Bits Datenwurm</b><p>Sammle die vier goldenen Protokollblöcke. Rote Firewalls, die Wand und dein eigener Schwanz beenden die Verbindung. Das rote Auge ist ECHO.</p>','Wurm starten',()=>start())};
+ overlay('<b>Bits Datenwurm</b><p>Sammle die vier goldenen Protokollblöcke. Rote Firewalls und dein eigener Schwanz beenden die Verbindung. Am Rand tauchst du auf der anderen Seite wieder auf. Das rote Auge ist ECHO.</p>','Wurm starten',()=>start())};
 
 // Patchfeld zeigt nur gesicherte Protokollzeilen
 const _server=MODS.server;MODS.server=m=>{_server(m);if(wormDone())return;const lg=$('.srv .log');if(!lg)return;
