@@ -152,3 +152,5 @@ DAYS[16].mods.unshift({t:'worm',ic:'game',b:'Datenwurm',s:'ECHO hat das Protokol
 DAYS[16].hints[0]='Starte zuerst den Datenwurm und sammle alle vier goldenen Protokollblöcke ein. Danach siehst du das ganze Protokoll. Das Neueste steht oben: Dreh die Reihenfolge um, der älteste Fehler kommt an Kabel 1.';
 DAYS[20].mods.unshift({t:'defrag',ic:'game',b:'Speicher defragmentieren',s:'Der Absturz hat den Funk zerlegt. Räum auf'});
 DAYS[20].hints[0]='Räum zuerst den Speicher auf, bis alle vier Wörter des Notfallfunks zu sehen sind. Dann zähl deine Fragmente in der Einsatzakte zusammen: Das ist die Verschiebung.';
+// Direktaufruf zum Ausprobieren: #wurm oder #speicher
+if(/^#(wurm|speicher)$/.test(location.hash))setTimeout(()=>{const k=location.hash.slice(1);if(k==='wurm'){st.games.worm=[];st.games.wormFails=0;st.games.wormEasy=0;MODS.worm({})}else{st.games.defrag=0;st.games.defragFails=0;MODS.defrag({})}},700);
