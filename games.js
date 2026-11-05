@@ -1,6 +1,10 @@
 // Minispiele: Datenwurm (Tag 16) und Speicher defragmentieren (Tag 20)
 IC.game='<svg viewBox="0 0 24 24"><path d="M6 8h12a4 4 0 014 4v2a3 3 0 01-5.4 1.8L15 14H9l-1.6 1.8A3 3 0 012 14v-2a4 4 0 014-4z"/><path d="M7 11v3M5.5 12.5h3M16 11.5h.01M18 13.5h.01"/></svg>';
 st.games=st.games||{};
+// Ton freischalten: Browser erlauben Audio erst nach einer Berührung
+['pointerdown','touchend','keydown'].forEach(ev=>document.addEventListener(ev,()=>{try{ac();if(AC.state==='suspended')AC.resume()}catch(e){}},true));
+const gameMusic=src=>{try{ac();if(AC.state==='suspended')AC.resume()}catch(e){}music(src,.55)};
+const backMusic=()=>{try{music(actFor(Math.max(1,typeof maxDay==='function'?maxDay():1)).m,.4)}catch(e){music(null)}};
 const ERRS=LOG.filter(l=>l[1]!=='INFO');
 const wormDone=()=>PROBE||(st.games.worm||[]).length>=4;
 const DEFRAG_N=8,NF_WORDS=NOTFUNK.split(' ');
@@ -39,16 +43,16 @@ MODS.worm=m=>{const COLS=14,ROWS=18;st.games.worm=st.games.worm||[];st.games.wor
  const nextFood=()=>{const left=ERRS.map((e,i)=>i).filter(i=>!st.games.worm.includes(i));if(!left.length){food=null;return}food={p:free(),i:left[0]}};
  function reset(){snake=[[7,15],[7,16],[7,17]];dir=[0,-1];ndir=dir;hunter=easy()?null:[1,1];step=0;nextFood();hud()}
  function overlay(h,btn,fn){const o=$('#wm-ov');o.innerHTML=h+(btn?'<button class="btn" id="wm-b">'+btn+'</button>':'');o.classList.add('on');const bb=$('#wm-b');if(bb)bb.onclick=fn}
- function start(){$('#wm-ov').classList.remove('on');alive=true;clearInterval(timer);timer=setInterval(update,easy()?210:150)}
+ function start(){$('#wm-ov').classList.remove('on');gameMusic('a/mus_worm.mp3');if(!st.calls.wormIntro){st.calls.wormIntro=1;save();playVo('a/vo_bit_worm.mp3')}sfx('open',.5);alive=true;clearInterval(timer);timer=setInterval(update,easy()?210:150)}
  function turn(d){const D={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[d];if(!D)return;if(D[0]===-dir[0]&&D[1]===-dir[1])return;ndir=D;if(!alive&&!wormDone()&&!$('#wm-b'))start()}
- function crash(why){alive=false;clearInterval(timer);st.games.wormFails++;save();sfx('bad',.6);tone(90,.35,'sawtooth',.08);cv.classList.add('hit');setTimeout(()=>cv.classList.remove('hit'),400);
+ function crash(why){alive=false;clearInterval(timer);st.games.wormFails++;save();sfx('bad',.6);sfx('glitch',.4);tone(90,.35,'sawtooth',.08);cv.classList.add('hit');setTimeout(()=>cv.classList.remove('hit'),400);
   if(why==='echo'&&!st.calls.echoWorm){st.calls.echoWorm=1;save();playVo('a/vo_echo_worm.mp3')}
   let h='<b>Verbindung getrennt</b><p>'+(why==='echo'?'ECHO hat den Wurm erwischt.':why==='self'?'Der Wurm hat sich selbst gebissen.':'Der Wurm ist gegen eine Firewall gekracht.')+' Deine Blöcke bleiben gespeichert.</p>';
   overlay(h,'Neuer Versuch',()=>{reset();start()});
   const o=$('#wm-ov');if(st.games.wormFails>=3&&!st.games.wormEasy){const e=el('button','btn ghost','Leichter Modus: langsamer, ohne ECHO');e.onclick=()=>{st.games.wormEasy=1;save();reset();start()};o.appendChild(e)}
   if(st.games.wormFails>=6){const e=el('button','btn ghost','Bit übernimmt den Wurm');e.onclick=()=>{st.games.worm=[0,1,2,3];save();finish()};o.appendChild(e)}}
  function finish(){alive=false;clearInterval(timer);hud();sfx('ok',.7);overlay('<b>Protokoll wiederhergestellt</b><p>Alle vier Blöcke sind gesichert. Jetzt das Patchfeld.</p>','Zum Patchfeld',()=>{closeViewer();MODS.server(m)})}
- function update(){dir=ndir;step++;const h=[snake[0][0]+dir[0],snake[0][1]+dir[1]];
+ function update(){dir=ndir;step++;tone(step%2?880:660,.015,'square',.012);if(hunter&&step%2===0){const dd=Math.abs(hunter[0]-snake[0][0])+Math.abs(hunter[1]-snake[0][1]);if(dd<=3)tone(140+dd*30,.09,'sawtooth',.05)}const h=[snake[0][0]+dir[0],snake[0][1]+dir[1]];
   if(h[0]<0||h[1]<0||h[0]>=COLS||h[1]>=ROWS||isWall(h[0],h[1]))return crash('wall');if(snake.slice(0,-1).some(s=>s[0]===h[0]&&s[1]===h[1]))return crash('self');
   snake.unshift(h);
   if(food&&h[0]===food.p[0]&&h[1]===food.p[1]){st.games.worm.push(food.i);save();[523,659,784].forEach((f,k)=>tone(f,.08,'square',.05,k*.06));snake.push(...Array(2).fill(snake[snake.length-1]));
@@ -70,12 +74,11 @@ MODS.worm=m=>{const COLS=14,ROWS=18;st.games.worm=st.games.worm||[];st.games.wor
   raf=requestAnimationFrame(draw)}
  swipe(cv,d=>d!=='tap'&&turn(d));$$('.gm-pad button').forEach(bt=>bt.onclick=()=>turn(bt.dataset.d));
  const unk=keyHandler({ArrowUp:()=>turn('up'),ArrowDown:()=>turn('down'),ArrowLeft:()=>turn('left'),ArrowRight:()=>turn('right'),w:()=>turn('up'),s:()=>turn('down'),a:()=>turn('left'),d:()=>turn('right')});
- gameStop=()=>{clearInterval(timer);cancelAnimationFrame(raf);unk()};
+ gameStop=()=>{clearInterval(timer);cancelAnimationFrame(raf);unk();backMusic()};
  reset();raf=requestAnimationFrame(draw);window.__wm={get s(){return snake},set s(v){snake=v},get f(){return food},set d(v){dir=ndir=v},update:()=>update(),get alive(){return alive}};
  $('#wm-foot').textContent='Wischen, Pfeiltasten oder die Knöpfe. Firewalls und ECHOs Auge meiden.';
  if(wormDone()&&!PROBE)return finish();
- overlay('<b>Bits Datenwurm</b><p>Sammle die vier goldenen Protokollblöcke. Rote Firewalls, die Wand und dein eigener Schwanz beenden die Verbindung. Das rote Auge ist ECHO.</p>','Wurm starten',()=>start());
- if(!st.calls.wormIntro){st.calls.wormIntro=1;save();playVo('a/vo_bit_worm.mp3')}};
+ overlay('<b>Bits Datenwurm</b><p>Sammle die vier goldenen Protokollblöcke. Rote Firewalls, die Wand und dein eigener Schwanz beenden die Verbindung. Das rote Auge ist ECHO.</p>','Wurm starten',()=>start())};
 
 // Patchfeld zeigt nur gesicherte Protokollzeilen
 const _server=MODS.server;MODS.server=m=>{_server(m);if(wormDone())return;const lg=$('.srv .log');if(!lg)return;
@@ -110,7 +113,7 @@ MODS.defrag=m=>{const C=10,R=16;st.games.defrag=st.games.defrag||0;st.games.defr
  function spawn(){cur=next;cur.x=3;cur.y=0;next=mk(pick());drawNext();if(!fits(cur))over()}
  function drawNext(){nxx.clearRect(0,0,nc*4,nc*2);next.c.forEach(([a,b])=>draw1(nxx,a*nc,b*nc,nc,PCOL[next.k],''))}
  const speed=()=>(easy()?1000:Math.max(320,720-st.games.defrag*45));
- function start(){$('#df-ov').classList.remove('on');alive=true;clearInterval(timer);timer=setInterval(fall,speed())}
+ function start(){$('#df-ov').classList.remove('on');gameMusic('a/mus_defrag.mp3');if(!st.calls.defragIntro){st.calls.defragIntro=1;save();playVo('a/vo_henrik_defrag.mp3')}sfx('open',.5);alive=true;clearInterval(timer);timer=setInterval(fall,speed())}
  function lock(){cells(cur).forEach(([a,b])=>{if(b>=0)grid[b][a]={col:PCOL[cur.k],g:glyph(a,b)}});tone(180,.05,'square',.04);
   const full=[];grid.forEach((row,i)=>{if(row.every(Boolean))full.push(i)});
   if(full.length){flash=full.map(i=>({i,t:performance.now()}));full.forEach(i=>{grid.splice(i,1);grid.unshift(Array(C).fill(null))});
@@ -122,8 +125,8 @@ MODS.defrag=m=>{const C=10,R=16;st.games.defrag=st.games.defrag||0;st.games.defr
  function act(a){if(!alive){if(!$('#df-b'))start();return}let t;
   if(a==='left')t={...cur,x:cur.x-1};if(a==='right')t={...cur,x:cur.x+1};if(a==='down')t={...cur,y:cur.y+1};if(a==='rot'){cur=rot(cur);tone(660,.03,'sine',.04);return}
   if(a==='drop'){while(fits({...cur,y:cur.y+1}))cur={...cur,y:cur.y+1};tone(120,.08,'triangle',.07);return lock()}
-  if(t&&fits(t))cur=t}
- function over(){alive=false;clearInterval(timer);st.games.defragFails++;save();sfx('bad',.6);
+  if(t&&fits(t)){cur=t;tone(a==='down'?300:520,.02,'square',.03)}else if(t)tone(110,.04,'square',.03)}
+ function over(){alive=false;clearInterval(timer);st.games.defragFails++;save();sfx('bad',.6);sfx('glitch',.4);
   overlay('<b>Speicher voll</b><p>Die wiederhergestellten Reihen bleiben erhalten. Neuer Versuch mit leerem Speicher.</p>'+(easy()?'<p class="small">Leichter Modus ist an: Die Teile fallen langsamer.</p>':''),'Neu starten',()=>{reset();start()});
   if(st.games.defragFails>=4){const e=el('button','btn ghost','Henrik setzt den Rest von Hand');e.onclick=()=>{st.games.defrag=DEFRAG_N;save();words();finish()};$('#df-ov').appendChild(e)}}
  function finish(){alive=false;clearInterval(timer);words();sfx('ok',.7);overlay('<b>Funk vollständig</b><p>Henriks Notfallfunk ist wiederhergestellt. Jetzt die Decoderscheibe.</p>','Funk öffnen',()=>{closeViewer();MODS.notfunk({})})}
@@ -136,11 +139,10 @@ MODS.defrag=m=>{const C=10,R=16;st.games.defrag=st.games.defrag||0;st.games.defr
  swipe(cv,(d,ad)=>{if(d==='tap')return act('rot');if(d==='left'||d==='right'){const n=Math.max(1,Math.round(ad/cs));for(let i=0;i<n;i++)act(d)}if(d==='down')act('drop');if(d==='up')act('rot')});
  $$('.gm-pad.df button').forEach(bt=>bt.onclick=()=>act(bt.dataset.a));
  const unk=keyHandler({ArrowLeft:()=>act('left'),ArrowRight:()=>act('right'),ArrowDown:()=>act('down'),ArrowUp:()=>act('rot'),' ':()=>act('drop')});
- gameStop=()=>{clearInterval(timer);cancelAnimationFrame(raf);unk()};
+ gameStop=()=>{clearInterval(timer);cancelAnimationFrame(raf);unk();backMusic()};
  reset();words();raf=requestAnimationFrame(draw);window.__df={get g(){return grid},get cur(){return cur},set cur(v){cur=v},mk,act,start};
  if(defragDone()&&!PROBE)return finish();
- overlay('<b>Speicher zerschossen</b><p>Henriks Funk liegt in Trümmern. Setz die Speicherblöcke lückenlos. Je zwei volle Reihen holen ein Wort zurück. Deine Reihen bleiben gespeichert, auch wenn der Speicher vollläuft.</p>','Aufräumen',()=>start());
- if(!st.calls.defragIntro){st.calls.defragIntro=1;save();playVo('a/vo_henrik_defrag.mp3')}};
+ overlay('<b>Speicher zerschossen</b><p>Henriks Funk liegt in Trümmern. Setz die Speicherblöcke lückenlos. Je zwei volle Reihen holen ein Wort zurück. Deine Reihen bleiben gespeichert, auch wenn der Speicher vollläuft.</p>','Aufräumen',()=>start())};
 
 // Notfallfunk erst lesbar, wenn der Speicher aufgeräumt ist
 const _notfunk=MODS.notfunk;MODS.notfunk=m=>{if(defragDone())return _notfunk(m);
@@ -153,4 +155,4 @@ DAYS[16].hints[0]='Starte zuerst den Datenwurm und sammle alle vier goldenen Pro
 DAYS[20].mods.unshift({t:'defrag',ic:'game',b:'Speicher defragmentieren',s:'Der Absturz hat den Funk zerlegt. Räum auf'});
 DAYS[20].hints[0]='Räum zuerst den Speicher auf, bis alle vier Wörter des Notfallfunks zu sehen sind. Dann zähl deine Fragmente in der Einsatzakte zusammen: Das ist die Verschiebung.';
 // Direktaufruf zum Ausprobieren: #wurm oder #speicher
-if(/^#(wurm|speicher)$/.test(location.hash))setTimeout(()=>{const k=location.hash.slice(1);if(k==='wurm'){st.games.worm=[];st.games.wormFails=0;st.games.wormEasy=0;MODS.worm({})}else{st.games.defrag=0;st.games.defragFails=0;MODS.defrag({})}},700);
+if(/^#(wurm|speicher)$/.test(location.hash))setTimeout(()=>{const k=location.hash.slice(1);if(k==='wurm'){st.games.worm=[];st.games.wormFails=0;st.games.wormEasy=0;st.calls.wormIntro=0;st.calls.echoWorm=0;MODS.worm({})}else{st.games.defrag=0;st.games.defragFails=0;st.calls.defragIntro=0;st.calls.echoDefrag=0;MODS.defrag({})}},700);
