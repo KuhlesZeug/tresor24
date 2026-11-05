@@ -98,6 +98,7 @@ function saveCert(dt){const c=document.createElement('canvas');c.width=1600;c.he
  x.fillStyle='#c9d6ea';x.font='36px Inter,sans-serif';x.fillText('Hiermit wird bestätigt, dass',800,390);x.fillStyle='#d9b46a';x.font='700 110px "Chakra Petch",sans-serif';x.fillText(st.cn||'AGENT',800,530);
  x.fillStyle='#c9d6ea';x.font='34px Inter,sans-serif';['die Operation Stille Nacht erfolgreich abgeschlossen,','den Tresor im Aurelion Tower geöffnet','und Lumenstadt seine Stimme zurückgegeben hat.'].forEach((l,i)=>x.fillText(l,800,630+i*52));
  x.font='30px Inter,sans-serif';x.fillText('Mira Okafor, Einsatzleitung',400,940);x.fillText(dt,800,940);x.fillText('ECHO, Leuchtturm',1200,940);
+ if(window.PHOTO_IMG&&PHOTO_IMG.complete){x.save();x.beginPath();x.arc(250,450,105,0,7);x.clip();x.filter='grayscale(1) contrast(1.15)';x.drawImage(PHOTO_IMG,145,345,210,210);x.restore();x.strokeStyle='#d9b46a';x.lineWidth=5;x.beginPath();x.arc(250,450,111,0,7);x.stroke();x.fillStyle='#3cf2b5';x.font='700 22px "Chakra Petch",sans-serif';x.fillText('AGENT · STUFE 1',250,592)}
  const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='Agentenurkunde_'+(st.cn||'Agent')+'.png';a.click()}
 const _runAfter2=runAfter;runAfter=async function(a){if(a.t==='finale'){if(st.calls[a.once]&&!PROBE)return;await sleep(a.delay||0);st.calls[a.once]=1;save();return finale()}return _runAfter2(a)};
 

@@ -643,3 +643,33 @@ body.touring .demo{display:none}
  .pe{border:2px dashed #000;padding:36px;margin:20mm auto;width:150mm}.pe-k{font:700 12pt Arial;letter-spacing:.3em;color:#8a2a2a}.pe-to{font-style:italic;font-size:14pt;margin:8px 0 20px}
  .pe-g{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.pe-g span{border:1px solid #000;padding:8px;text-align:center;font:700 14pt "Courier New",monospace}
  .pe-f{margin-top:18px;font-size:11pt}.pe-s{margin-top:10px;font-size:10pt;font-style:italic}.pe-h{text-align:center;font-size:9pt;color:#555}}
+
+.skyleg{margin-top:10px;font-size:.8rem;display:grid;gap:6px}.skyleg b{font:700 .72rem var(--hud);letter-spacing:.14em;text-transform:uppercase}.skyleg i{font-style:normal;font-weight:700;display:block}.skyleg span{color:#4a5568}
+/* Minispiele */
+.gm{color:var(--ink);user-select:none;-webkit-user-select:none}
+.gm-h{display:flex;align-items:center;gap:8px;font:700 .78rem var(--hud);letter-spacing:.14em;margin-bottom:10px}.gm-h span:last-child{margin-left:auto;color:var(--nl)}
+.gm-stage{position:relative;display:inline-block;border:1px solid rgba(60,242,181,.35);border-radius:10px;overflow:hidden;box-shadow:0 0 30px rgba(60,242,181,.12),inset 0 0 0 1px rgba(0,0,0,.6)}
+.gm-stage canvas{display:block;touch-action:none}
+.worm .gm-stage{display:block;width:max-content;margin:0 auto}
+canvas.hit{animation:gmhit .4s}@keyframes gmhit{0%,100%{filter:none;transform:none}25%{filter:hue-rotate(140deg) saturate(3);transform:translateX(-4px)}60%{transform:translateX(4px)}}
+.gm-ov{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;text-align:center;background:rgba(4,8,14,.82);backdrop-filter:blur(2px)}
+.gm-ov.on{display:flex}.gm-ov b{font:700 1.05rem var(--hud);letter-spacing:.08em;color:var(--nl)}.gm-ov p{margin:0;font-size:.86rem;color:#c9d3e4;line-height:1.5}.gm-ov .btn{min-width:180px}
+.gm-pad{display:grid;grid-template-columns:repeat(3,58px);grid-template-rows:repeat(2,50px);gap:6px;justify-content:center;margin:12px auto 4px}
+.gm-pad button{border:1px solid rgba(60,242,181,.35);background:rgba(60,242,181,.06);color:var(--nl);border-radius:12px;font-size:1.1rem;touch-action:manipulation}
+.gm-pad button:active{background:rgba(60,242,181,.25)}
+.worm .gm-pad button[data-d=up]{grid-column:2}.worm .gm-pad button[data-d=left]{grid-column:1;grid-row:2}.worm .gm-pad button[data-d=down]{grid-column:2;grid-row:2}.worm .gm-pad button[data-d=right]{grid-column:3;grid-row:2}
+.gm-pad.df{grid-template-columns:repeat(5,52px);grid-template-rows:50px}
+.gm-foot{font-size:.74rem;color:var(--mute);text-align:center;margin-top:6px}
+.gm-log{margin-top:10px;font:500 .74rem/1.6 var(--mono);background:#050b14;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.gm-log .gl-h{font:700 .66rem var(--hud);letter-spacing:.16em;color:var(--mute);margin-bottom:4px}.gm-log .ok span{color:var(--mute);margin-right:6px}.gm-log .ok b{color:#ff5a6e;margin-right:6px}.gm-log .no{color:#3a4a66}
+.df-wrap{display:flex;gap:10px;justify-content:center;align-items:flex-start}
+.df-side{display:flex;flex-direction:column;gap:6px;align-items:center}.df-k{font:700 .62rem var(--hud);letter-spacing:.16em;color:var(--mute)}.df-n{font:700 1.4rem var(--hud);color:var(--nl)}
+.df-side canvas{border:1px solid var(--line);border-radius:6px;background:#050b14;margin-bottom:8px}
+.df-msg{background:#050b14;border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:10px;text-align:center}
+.df-w{font:700 1rem var(--mono);letter-spacing:.12em;color:#3a4a66;margin-top:4px;word-break:break-word}.df-w .ok{color:var(--ice);text-shadow:0 0 10px rgba(127,231,255,.5)}
+.idcard .ph.has{filter:grayscale(.35) contrast(1.08);box-shadow:inset 0 0 0 1px rgba(60,242,181,.4)}
+.id-ph-box{margin-top:10px}.id-ph-box .kp-row{display:flex;gap:8px;flex-wrap:wrap}
+.idcam-v{position:relative;width:100%;max-width:340px;aspect-ratio:1;margin:10px auto;border-radius:14px;overflow:hidden;border:1px solid rgba(60,242,181,.4)}
+.idcam-v video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.idcam-m{position:absolute;inset:12%;border:2px dashed rgba(60,242,181,.6);border-radius:46% 46% 40% 40%}
+.ce-ph{width:96px;height:96px;border-radius:50%;margin:8px auto 2px;background:center/cover;border:3px solid var(--au);filter:grayscale(1) contrast(1.15)}
