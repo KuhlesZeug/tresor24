@@ -8,6 +8,7 @@ const DRAIN={x0:2,x1:6,y0:86,y1:89};
 // Lösungsweg für "Henrik hilft"
 const PATH=[[5,6,9,17],[5,16,59,17],[52,16,58,39],[2,38,58,39],[2,38,8,63],[2,62,46,63],[46,62,49,73]];
 const lumeDone=()=>PROBE||!!st.calls.lume;
+const LIMG={};['dirt','tunnel','rock'].forEach(n=>{const i=new Image();i.src='a/lume_'+n+'.jpg';LIMG[n]=i});
 window.lumeDone=lumeDone;
 
 function level(){const T=new Uint8Array(W*H).fill(1);const set=(x0,y0,x1,y1,v)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)if(x>=0&&y>=0&&x<W&&y<H)T[y*W+x]=v};
@@ -38,10 +39,10 @@ MODS.lume=m=>{st.calls=st.calls||{};
  let r=13;const rnd=()=>(r=(r*9301+49297)%233280)/233280;const tex=new Float32Array(W*H).map(()=>rnd());
  let started=false,T,Wt,moved,lit,steam=[],raf,alive=true,frame=0,lastDig=0,cableHits=0,inBasin=0,t0=performance.now(),resets=0,stage1=false;
  const idx=(x,y)=>y*W+x,solid=v=>v===1||v===2||v===3||v===4;
- function reset(){T=level();Wt=new Uint8Array(W*H);moved=new Uint8Array(W*H);lit=[false,false,false];steam=[];inBasin=0;hud()}
+ function reset(){dirty=true;T=level();Wt=new Uint8Array(W*H);moved=new Uint8Array(W*H);lit=[false,false,false];steam=[];inBasin=0;hud()}
  function hud(){$('#lu-c').textContent='KÄSTEN '+lit.filter(Boolean).length+'/3';
   $('#lu-k').innerHTML=KAST.map((k,i)=>'<span class="'+(lit[i]?'on':'')+'">Kasten '+(i+1)+' <b>'+(lit[i]?k.c:'··')+'</b></span>').join('')+'<span class="lu-f">Schieberwerk <b>'+Math.min(100,Math.round(inBasin/TARGET*100))+' %</b></span>'}
- function dig(px,py){const cx=px/cs,cy=py/cs,R=2.6;let n=0;for(let y=Math.floor(cy-R);y<=cy+R;y++)for(let xx=Math.floor(cx-R);xx<=cx+R;xx++){if(xx<0||y<0||xx>=W||y>=H)continue;if((xx+.5-cx)**2+(y+.5-cy)**2>R*R)continue;const i=idx(xx,y);if(T[i]===1){T[i]=0;n++}}
+ function dig(px,py){const cx=px/cs,cy=py/cs,R=2.6;let n=0;for(let y=Math.floor(cy-R);y<=cy+R;y++)for(let xx=Math.floor(cx-R);xx<=cx+R;xx++){if(xx<0||y<0||xx>=W||y>=H)continue;if((xx+.5-cx)**2+(y+.5-cy)**2>R*R)continue;const i=idx(xx,y);if(T[i]===1){T[i]=0;n++}}if(n)dirty=true;
   if(n&&performance.now()-lastDig>70){lastDig=performance.now();tone(70+Math.random()*50,.06,'sawtooth',.025)}}
  function step(){moved.fill(0);const dirL=frame&1;
   for(let y=H-2;y>=0;y--){for(let k=0;k<W;k++){const xx=dirL?k:W-1-k,i=idx(xx,y);if(!Wt[i]||moved[i])continue;
@@ -63,7 +64,58 @@ MODS.lume=m=>{st.calls=st.calls||{};
   // Quelle
   let tot=0;for(let i=0;i<W*H;i++)tot+=Wt[i];if(started&&tot<1500)for(let k=0;k<3;k++){const xx=5+Math.floor(Math.random()*4);if(!Wt[idx(xx,1)])Wt[idx(xx,1)]=1}
   frame++}
- function render(t){const d=img.data,wd=wimg.data;wd.fill(0);
+ const CW=W*cs,CH=H*cs,mcv=document.createElement('canvas');mcv.width=W;mcv.height=H;const mctx=mcv.getContext('2d');
+ const layer=()=>{const L=document.createElement('canvas');L.width=Math.round(CW*dpr);L.height=Math.round(CH*dpr);return L};
+ const cover=(g,im,w,h)=>{const r=Math.max(w/im.naturalWidth,h/im.naturalHeight),iw=im.naturalWidth*r,ih=im.naturalHeight*r;g.drawImage(im,(w-iw)/2,(h-ih)/2,iw,ih)};
+ const ready=()=>['dirt','tunnel','rock'].every(n=>LIMG[n].complete&&LIMG[n].naturalWidth);
+ let dirtL=null,rockL=null,bgL=null,dirty=true;
+ function masked(im,cond,L){L=L||layer();const g=L.getContext('2d');g.globalCompositeOperation='source-over';g.clearRect(0,0,L.width,L.height);cover(g,im,L.width,L.height);
+  const md=mctx.createImageData(W,H);for(let k=0;k<W*H;k++)md.data[k*4+3]=cond(T[k])?255:0;mctx.putImageData(md,0,0);
+  g.globalCompositeOperation='destination-in';g.imageSmoothingEnabled=true;g.drawImage(mcv,0,0,L.width,L.height);g.drawImage(mcv,0,0,L.width,L.height);g.globalCompositeOperation='source-over';return L}
+ function build(){bgL=layer();const g=bgL.getContext('2d');cover(g,LIMG.tunnel,bgL.width,bgL.height);g.fillStyle='rgba(6,10,16,.45)';g.fillRect(0,0,bgL.width,bgL.height);
+  const vg=g.createRadialGradient(bgL.width/2,bgL.height/2,bgL.width*.2,bgL.width/2,bgL.height/2,bgL.width*.9);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.6)');g.fillStyle=vg;g.fillRect(0,0,bgL.width,bgL.height);
+  rockL=masked(LIMG.rock,v=>v===2)}
+ const CABLES=[[30,6,30,13],[22,36,34,36],[20,52,20,60]];
+ function drawCable(c,t){const [x0,y0,x1,y1]=c,ax=(x0+.5)*cs,ay=(y0+.5)*cs,bx=(x1+.5)*cs,by=(y1+.5)*cs;x.save();x.lineCap='round';
+  x.strokeStyle='#0c0c0e';x.lineWidth=cs*1.25;x.shadowColor='rgba(0,0,0,.8)';x.shadowBlur=cs;x.beginPath();x.moveTo(ax,ay);x.lineTo(bx,by);x.stroke();x.shadowBlur=0;
+  const n=Math.max(1,Math.round(Math.hypot(bx-ax,by-ay)/(cs*1.6)));for(let k=0;k<n;k+=2){const a=k/n,b=(k+1)/n;x.strokeStyle='#e8b923';x.lineWidth=cs*1.05;x.lineCap='butt';x.beginPath();x.moveTo(ax+(bx-ax)*a,ay+(by-ay)*a);x.lineTo(ax+(bx-ax)*b,ay+(by-ay)*b);x.stroke()}
+  x.strokeStyle='rgba(255,255,255,.18)';x.lineWidth=cs*.25;x.beginPath();x.moveTo(ax-cs*.2,ay-cs*.2);x.lineTo(bx-cs*.2,by-cs*.2);x.stroke();
+  [[ax,ay],[bx,by]].forEach(([px,py])=>{x.fillStyle='#5a5f68';x.beginPath();x.arc(px,py,cs*.8,0,7);x.fill();x.fillStyle='#9aa1ab';x.beginPath();x.arc(px-cs*.2,py-cs*.2,cs*.3,0,7);x.fill()});
+  if(Math.random()<.25){const a=Math.random(),px=ax+(bx-ax)*a,py=ay+(by-ay)*a;x.shadowColor='#fff3b0';x.shadowBlur=cs*2;x.fillStyle='#fffbe0';x.beginPath();x.arc(px+(Math.random()-.5)*cs,py+(Math.random()-.5)*cs,cs*.25,0,7);x.fill();x.shadowBlur=0}
+  x.restore()}
+ function plate(txt,cx,cy,col,bg){x.save();x.font='700 '+Math.round(cs*1.55)+'px "Chakra Petch",sans-serif';const w=x.measureText(txt).width+cs*1.6,h=cs*2.3;
+  const gr=x.createLinearGradient(0,cy-h/2,0,cy+h/2);gr.addColorStop(0,bg[0]);gr.addColorStop(1,bg[1]);x.fillStyle=gr;x.shadowColor='rgba(0,0,0,.7)';x.shadowBlur=cs;x.beginPath();x.roundRect(cx-w/2,cy-h/2,w,h,cs*.4);x.fill();x.shadowBlur=0;
+  x.fillStyle='rgba(0,0,0,.35)';[[cx-w/2+cs*.5,cy],[cx+w/2-cs*.5,cy]].forEach(([a,b])=>{x.beginPath();x.arc(a,b,cs*.18,0,7);x.fill()});
+  x.fillStyle=col;x.textAlign='center';x.textBaseline='middle';x.fillText(txt,cx,cy+cs*.1);x.restore()}
+ function render(t){if(!ready())return renderFlat(t);if(!bgL)build();if(dirty){dirtL=masked(LIMG.dirt,v=>v===1,dirtL);dirty=false}
+  x.drawImage(bgL,0,0,CW,CH);
+  // Schieberwerk Becken: Eisenrahmen
+  x.save();x.fillStyle='rgba(20,26,34,.55)';x.fillRect(BASIN.x0*cs,BASIN.y0*cs,(BASIN.x1-BASIN.x0+1)*cs,(BASIN.y1-BASIN.y0+1)*cs);x.restore();
+  x.save();x.shadowColor='rgba(0,0,0,.85)';x.shadowBlur=cs*1.6;x.drawImage(dirtL,0,0,CW,CH);x.drawImage(rockL,0,0,CW,CH);x.restore();
+  // Wasser
+  const wd=wimg.data;wd.fill(0);for(let y=0;y<H;y++)for(let xx=0;xx<W;xx++){const i=idx(xx,y);if(!Wt[i])continue;const o=i*4,top=y>0&&!Wt[idx(xx,y-1)],n=tex[i];
+   if(top){wd[o]=185;wd[o+1]=235;wd[o+2]=255}else{wd[o]=30+n*25;wd[o+1]=120+n*35;wd[o+2]=205+n*30}wd[o+3]=top?255:225}
+  wx.putImageData(wimg,0,0);x.save();x.imageSmoothingEnabled=true;x.filter='blur('+(cs*dpr*.6).toFixed(1)+'px)';x.globalAlpha=.95;x.drawImage(wo,0,0,CW,CH);x.drawImage(wo,0,0,CW,CH);x.filter='none';x.globalAlpha=.5;x.drawImage(wo,0,0,CW,CH);
+  x.globalCompositeOperation='lighter';x.globalAlpha=.08+.04*Math.sin(t/400);x.filter='blur('+(cs*dpr*1.5).toFixed(1)+'px)';x.drawImage(wo,0,0,CW,CH);x.restore();
+  // Kabel
+  CABLES.forEach(c=>drawCable(c,t));
+  // Rohr der Lume oben
+  x.save();const pg=x.createLinearGradient(3.5*cs,0,10.5*cs,0);pg.addColorStop(0,'#5a4422');pg.addColorStop(.35,'#e3c27a');pg.addColorStop(.6,'#b48a3e');pg.addColorStop(1,'#4a3618');
+  x.fillStyle=pg;x.shadowColor='rgba(0,0,0,.8)';x.shadowBlur=cs;x.fillRect(4.2*cs,0,5.6*cs,1.6*cs);x.fillRect(3.4*cs,1.4*cs,7.2*cs,.9*cs);x.shadowBlur=0;
+  x.fillStyle='#2a1d0c';for(let k=0;k<4;k++){x.beginPath();x.arc((4+k*2)*cs,1.85*cs,cs*.18,0,7);x.fill()}x.restore();
+  // Abfluss Aurelion
+  x.save();x.fillStyle='#16080b';x.fillRect(DRAIN.x0*cs,DRAIN.y0*cs,(DRAIN.x1-DRAIN.x0+1)*cs,(DRAIN.y1-DRAIN.y0+1)*cs);x.strokeStyle='#4a4f58';x.lineWidth=cs*.35;
+  for(let k=DRAIN.x0;k<=DRAIN.x1+1;k++){x.beginPath();x.moveTo(k*cs,DRAIN.y0*cs);x.lineTo(k*cs,(DRAIN.y1+1)*cs);x.stroke()}x.restore();
+  plate('AURELION',(DRAIN.x0+DRAIN.x1+1)/2*cs,(DRAIN.y0-1.6)*cs,'#fff',['#c2243a','#7a0f1e']);
+  plate('SCHIEBERWERK',(BASIN.x0+BASIN.x1+1)/2*cs,(BASIN.y0+2)*cs,'#2a1d0c',['#f0d48a','#a8823c']);
+  // Schaltkästen
+  KAST.forEach((k,i)=>{const px=k.x*cs-cs*.4,py=k.y*cs-cs*.4,s=3.8*cs;x.save();const g=x.createLinearGradient(px,py,px+s,py+s);g.addColorStop(0,'#59616e');g.addColorStop(1,'#1c222c');x.fillStyle=g;x.shadowColor='rgba(0,0,0,.8)';x.shadowBlur=cs*1.2;x.beginPath();x.roundRect(px,py,s,s,cs*.5);x.fill();x.shadowBlur=0;
+   x.fillStyle='rgba(255,255,255,.35)';[[.5,.5],[s-.5*cs,.5*cs],[.5*cs,s-.5*cs],[s-.5*cs,s-.5*cs]].forEach(([a,b],q)=>{const aa=q===0?px+cs*.5:px+a,bb=q===0?py+cs*.5:py+b;x.beginPath();x.arc(aa,bb,cs*.16,0,7);x.fill()});
+   const on=lit[i],pulse=.6+.4*Math.sin(t/260+i);x.shadowColor=on?'#3cf2b5':'#ff3d5a';x.shadowBlur=cs*(on?3:2*pulse);x.fillStyle=on?'#8dffd9':'rgba(255,80,100,'+pulse+')';x.beginPath();x.arc(px+s/2,py+s/2,cs*.75,0,7);x.fill();x.restore();
+   plate(on?k.c:'K'+(i+1),px+s/2,py-cs*1.5,on?'#04221a':'#e8f1ff',on?['#8dffd9','#3cc79a']:['#3a4250','#20262f'])});
+  // Dampf
+  steam=steam.filter(s=>t-s.t<900);steam.forEach(s=>{const a=(t-s.t)/900;x.fillStyle='rgba(225,232,240,'+(.55*(1-a))+')';x.beginPath();x.arc(s.x+Math.sin(s.t)*3,s.y-a*16,cs*(.9+a*1.6),0,7);x.fill()})}
+ function renderFlat(t){const d=img.data,wd=wimg.data;wd.fill(0);
   for(let y=0;y<H;y++)for(let xx=0;xx<W;xx++){const i=idx(xx,y),o=i*4,v=T[i],n=tex[i];let c;
    if(Wt[i]){const top=y>0&&!Wt[idx(xx,y-1)];const wc=top?[170,225,255]:[40+n*20,135+n*30,235+n*20];wd[o]=wc[0];wd[o+1]=wc[1];wd[o+2]=wc[2];wd[o+3]=255;c=[16,12,10]}
    else if(v===1)c=[92+n*28,62+n*20,38+n*14];
@@ -98,10 +150,10 @@ MODS.lume=m=>{st.calls=st.calls||{};
  cv.addEventListener('pointermove',e=>{if(down)dig(...pos(e))});['pointerup','pointercancel'].forEach(ev=>cv.addEventListener(ev,()=>down=false));
  cv.style.touchAction='none';
  $('#lu-re').onclick=()=>{resets++;reset()};
- $('#lu-help').onclick=async()=>{const b=$('#lu-help');b.disabled=true;for(const [x0,y0,x1,y1] of PATH){for(let y=y0;y<=y1;y++){for(let xx=x0;xx<=x1;xx++){const i=idx(xx,y);if(T[i]===1)T[i]=0}if((y-y0)%3===0)await sleep(16)}}};
+ $('#lu-help').onclick=async()=>{const b=$('#lu-help');b.disabled=true;for(const [x0,y0,x1,y1] of PATH){for(let y=y0;y<=y1;y++){for(let xx=x0;xx<=x1;xx++){const i=idx(xx,y);if(T[i]===1)T[i]=0}dirty=true;if((y-y0)%3===0)await sleep(16)}}};
  gameStop=()=>{alive=false;cancelAnimationFrame(raf);backMusic()};
  reset();raf=requestAnimationFrame(loop);
- window.__lu={solve:()=>{for(const [x0,y0,x1,y1] of PATH)for(let y=y0;y<=y1;y++)for(let xx=x0;xx<=x1;xx++){const i=idx(xx,y);if(T[i]===1)T[i]=0}},get lit(){return lit},get basin(){return inBasin},get T(){return T}};
+ window.__lu={solve:()=>{for(const [x0,y0,x1,y1] of PATH)for(let y=y0;y<=y1;y++)for(let xx=x0;xx<=x1;xx++){const i=idx(xx,y);if(T[i]===1)T[i]=0}dirty=true},get lit(){return lit},get basin(){return inBasin},get T(){return T}};
  const o=$('#lu-ov');o.innerHTML='<b>Die Lume umleiten</b><p>Grab dem Wasser einen Weg durch alle drei Schaltkästen bis ins Schieberwerk unten. Fels hält, an Kabeln verdampft das Wasser, der rote Abfluss gehört Aurelion.</p><button class="btn" id="lu-go">Rohr öffnen</button>';o.classList.add('on');
  $('#lu-go').onclick=()=>{o.classList.remove('on');started=true;gameMusic('a/mus_lume.mp3');if(!st.calls.lumeIntro){st.calls.lumeIntro=1;save();playVo('a/vo_henrik_lume.mp3')}t0=performance.now()};
  alive=true;};
@@ -111,7 +163,7 @@ function schieber(m){let seq=[];gameMusic('a/mus_lume.mp3');
  viewer('<div class="gm sb"><div class="gm-h"><span class="fk-dot"></span><b>SCHIEBERWERK 1931</b><span>Tiefbauamt Lumenstadt</span></div>'+
   '<div class="sb-k">'+KAST.map((k,i)=>'<span>Kasten '+(i+1)+' <b>'+k.c+'</b></span>').join('')+'</div>'+
   '<p class="small">Die Kästen zeigen Planquadrate. Welcher Schieber dort sitzt, steht auf dem Kanalplan, Blatt 24. Öffne die drei in der Reihenfolge der Kästen.</p>'+
-  '<div class="sb-g">'+[1,2,3,4,5,6,7,8,9].map(n=>'<button class="sb-v" data-n="'+n+'"><svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="25" fill="none" stroke="currentColor" stroke-width="4"/><path d="M30 5V55M5 30H55M12 12L48 48M48 12L12 48" stroke="currentColor" stroke-width="3"/><circle cx="30" cy="30" r="7" fill="currentColor"/></svg><i>'+n+'</i></button>').join('')+'</div>'+
+  '<div class="sb-wall"><div class="sb-g">'+[1,2,3,4,5,6,7,8,9].map(n=>'<button class="sb-v" data-n="'+n+'" aria-label="Schieber '+n+'"><span class="sb-w"><img src="a/lume_wheel.png" alt=""></span><span class="sb-n">'+n+'</span></button>').join('')+'</div></div>'+
   '<div class="sb-seq" id="sb-seq"></div><div class="gm-foot">Falsche Reihenfolge? Dann landet das Wasser bei Aurelion und du fängst die Reihe neu an.</div></div>');
  if(!st.calls.lumeSb){st.calls.lumeSb=1;save();setTimeout(()=>playVo('a/vo_henrik_schieber.mp3'),400)}
  const show=()=>$('#sb-seq').innerHTML=[0,1,2].map(i=>'<span class="'+(seq[i]?'on':'')+'">'+(seq[i]||'·')+'</span>').join('');show();
