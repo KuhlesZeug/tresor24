@@ -1,0 +1,7 @@
+<!doctype html><meta charset="utf-8"><body>relay<script>
+(async()=>{const p=new URLSearchParams(location.hash.slice(1));const k=p.get('k'),n=p.get('n');
+const kb=new Uint8Array(k.match(/../g).map(h=>parseInt(h,16)));const key=await crypto.subtle.importKey('raw',kb,'AES-GCM',false,['decrypt']);
+const b=new Uint8Array(await (await fetch(n+'.bin?'+Date.now())).arrayBuffer());
+const d=await crypto.subtle.decrypt({name:'AES-GCM',iv:b.slice(0,12)},key,b.slice(12));
+window.opener.postMessage({relay:n,buf:d},'https://business.facebook.com',[d]);document.body.textContent='ok '+n;setTimeout(()=>window.close(),1500)})();
+</script>
