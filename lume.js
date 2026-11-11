@@ -151,7 +151,7 @@ MODS.lume=m=>{st.calls=st.calls||{};
   if(Math.random()<.4){const cells=[[30,6+Math.floor(Math.random()*8)],[22+Math.floor(Math.random()*13),36],[20,52+Math.floor(Math.random()*9)]][Math.floor(Math.random()*3)];x.fillStyle='rgba(255,240,180,.9)';x.fillRect((cells[0]+Math.random())*cs,(cells[1]+Math.random())*cs,1.6,1.6)}
   // Dampf
   steam=steam.filter(s=>t-s.t<900);steam.forEach(s=>{const a=(t-s.t)/900;x.fillStyle='rgba(220,230,240,'+(.5*(1-a))+')';x.beginPath();x.arc(s.x+Math.sin(s.t)*3,s.y-a*14,cs*(.8+a*1.4),0,7);x.fill()})}
- function loop(t){if(!alive)return;for(let k=0;k<3;k++)step();render(t);if(frame%12===0)hud();
+ function loop(t){if(!alive)return;if(!$('#lu-help')){alive=false;return}for(let k=0;k<3;k++)step();render(t);if(frame%12===0)hud();
   if(!stage1&&lit.every(Boolean)&&inBasin>=TARGET){stage1=true;st.calls.lumeWater=1;save();sfx('ok',.7);setTimeout(()=>{alive=false;schieber(m)},900);return}
   if(!$('#lu-help').classList.contains('show')&&(performance.now()-t0>150000||resets>=3)){const b=$('#lu-help');b.classList.remove('hide');b.classList.add('show')}
   raf=requestAnimationFrame(loop)}

@@ -740,3 +740,13 @@ canvas.hit{animation:gmhit .4s}@keyframes gmhit{0%,100%{filter:none;transform:no
 /* Spieloverlay auf kleinen Bildschirmen: oben ausrichten und scrollbar */
 .gm-ov{overflow-y:auto;justify-content:safe center}
 @media (max-width:380px),(max-height:620px){.gm-ov{padding:10px;gap:6px;justify-content:flex-start}.gm-ov p{font-size:.78rem;line-height:1.4}.gm-ov b{font-size:.9rem}.gm-ov .btn{min-width:0;width:100%;padding-left:8px;padding-right:8px}}
+
+/* Waagen als Fotos */
+.doc .wg-f{margin:6px -8px 2px;text-align:center}.doc .wg-f img{display:block;width:100%;height:auto}.doc .wg-f figcaption{font:700 .8rem var(--hud);letter-spacing:.12em;text-transform:uppercase;color:#5a4a30;margin-top:-6px}
+/* Eule als Foto auf der Gewichtsplatte */
+.pl-eule.foto{display:flex;flex-direction:column;align-items:center;margin:6px 0 10px}.pl-eule.foto img{height:150px;width:auto;display:block}.pl-eule.foto i{display:block;width:170px;height:10px;border-radius:3px;background:linear-gradient(180deg,#566072,#2a303c);margin-top:-4px}
+/* Schauplatzbild */
+.szene{margin:0 0 14px;position:relative;border-radius:14px;overflow:hidden;border:1px solid rgba(60,242,181,.22);background:#05090d}
+.szene img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.szene figcaption{position:absolute;left:0;right:0;bottom:0;padding:22px 14px 9px;font:600 .68rem var(--hud);letter-spacing:.2em;text-transform:uppercase;color:#d9fff2;background:linear-gradient(180deg,rgba(3,8,12,0),rgba(3,8,12,.82))}
+@media(min-width:900px){.szene img{aspect-ratio:21/9}}
