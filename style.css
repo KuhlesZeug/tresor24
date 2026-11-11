@@ -750,3 +750,5 @@ canvas.hit{animation:gmhit .4s}@keyframes gmhit{0%,100%{filter:none;transform:no
 .szene img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
 .szene figcaption{position:absolute;left:0;right:0;bottom:0;padding:22px 14px 9px;font:600 .68rem var(--hud);letter-spacing:.2em;text-transform:uppercase;color:#d9fff2;background:linear-gradient(180deg,rgba(3,8,12,0),rgba(3,8,12,.82))}
 @media(min-width:900px){.szene img{aspect-ratio:21/9}}
+
+.dial2{filter:drop-shadow(0 8px 16px rgba(0,0,0,.45))}.dial2 .tk{stroke:#cfd5df;stroke-width:1.6;stroke-linecap:round}.dial2 .tk5{stroke:#f2f5fa;stroke-width:2.4}.dial2 .tn{fill:#f2f5fa;font:700 13px var(--hud);paint-order:stroke;stroke:rgba(0,0,0,.55);stroke-width:2px}.dial2 .d-mark{fill:var(--red);stroke:#2a0a0f;stroke-width:1}
