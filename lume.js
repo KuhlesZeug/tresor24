@@ -187,7 +187,7 @@ async function powerOff(m){const v=$('#viewer .v-box');sfx('static',.5);tone(60,
  $('#lu-kn').onclick=()=>{closeViewer();if(window.__luDemo)return toast('Im Kalender geht es hier mit Bits Klopfcode weiter.',4000);openMod(DAYS[23].mods.find(x=>x.t==='knock'))}}
 
 // Einbau in Tag 23
-DAYS[23].mods.unshift({t:'lume',ic:'game',b:'Die Lume umleiten',s:'Kanal unter dem Keller, Henrik hat das Rohr geöffnet'},{t:'print',ic:'doc',b:'Kanalplan Lumenstadt 1931',s:'Einsatzakte, Blatt 24',doc:'kanal'});
+DAYS[23].mods.unshift({t:'lume',ic:'game',b:'Zuerst: Die Lume umleiten',s:'Bits Zellentür hängt am Notstrom. Henrik hat das Rohr unter dem Keller geöffnet.'},{t:'print',ic:'doc',b:'Kanalplan Lumenstadt 1931',s:'Einsatzakte, Blatt 24',doc:'kanal'});
 DAYS[23].gate=()=>lumeDone();DAYS[23].gateMsg='Die Zellentür hängt noch am Notstrom. Leite zuerst die Lume ins Schieberwerk.';
 DAYS[23].hints=['Erst die Lume: Grab dem Wasser einen Weg durch alle drei Schaltkästen bis ins Schieberwerk. Lass unter den Kabeln eine Reihe Erde stehen. Jeder Kasten zeigt ein Planquadrat.',
  'Auf dem Kanalplan, Blatt 24, sitzt in D6 Schieber 7, in B3 Schieber 2 und in G2 Schieber 5. Öffne 7, 2, 5. Danach klopft Bit: erst die Zeile der Tafel, dann die Spalte. Die ersten Klopfer sind 3 und 1, das ist L.',

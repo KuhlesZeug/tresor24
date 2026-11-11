@@ -39,6 +39,7 @@ MODS.lift=m=>{let stops=[];
  $('#lp-x').onclick=()=>{stops=[];draw();$('#lp-m').textContent='Tippe die Halte der Reihe nach an.'};
  $('#lp-go').onclick=async()=>{if(!stops.length)return;let prev=1;for(const f of stops){const d=f-prev;if(![3,5,7].includes(d)){sfx('bad');$('#lp-m').textContent='Getriebe blockiert: Von '+prev+' nach '+f+' sind es '+d+' Etagen. Erlaubt sind 3, 5 oder 7.';return}prev=f}
   if(prev!==21){sfx('bad');$('#lp-m').textContent='Die Fahrt endet in Etage '+prev+'. Ziel ist der 21. Stock.';return}
+  const al=stops.find(f=>[2,4,6,13,14,15,18].includes(f));if(al){sfx('bad');tone(1400,.15,'square',.08);tone(1400,.15,'square',.08,.25);$('#lp-m').textContent='Alarm! In Etage '+al+' hängt ein Bewegungsmelder. Der Kranich bricht die Fahrt ab. Schau in den Querschnitt.';return}
   $('#lp-m').textContent='Fahrt läuft …';sfx('lift',.5);await sleep(1400);closeViewer();$('#daycode').value=stops.join(' ');check()}};
 
 // Tag 12: Kurierumschlag

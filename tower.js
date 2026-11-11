@@ -2,7 +2,7 @@
 function curFloor(){let cur=1;for(let d=1;d<=24;d++){if(st.solved[d]){cur=Math.min(24,d+1);continue}if(unlocked(d)){cur=d;break}}return cur}
 function renderTower(){$('#tw-kick').textContent='Agent '+(st.cn||'');
  const solved=Object.keys(st.solved).length,fr=Object.keys(st.frag).length;
- $('#tw-status').innerHTML='<div><b>'+solved+'/24</b><span>Etagen</span></div><div><b>'+fr+'/4</b><span>Fragmente</span></div><div><b>'+countdown()+'</b><span>bis Stille Nacht</span></div>';
+ $('#tw-status').innerHTML='<div><b>'+solved+'/24</b><span>Etagen</span></div><div><b>'+fr+'/4</b><span>Fragmente</span></div>'+(st.fin||st.solved[24]?'<div><b>Gestoppt</b><span>Stille Nacht</span></div>':'<div><b>'+countdown()+'</b><span>bis Stille Nacht</span></div>');
  const cur=curFloor();const t=$('#tower');t.className='tower stage';
  let fl='',lb='';
  for(let d=24;d>=1;d--){const open=unlocked(d),done=!!st.solved[d];const cls=(done?'done':open?'open':'lock')+(d===cur&&!done?' cur':'');
@@ -15,7 +15,7 @@ function renderTower(){$('#tw-kick').textContent='Agent '+(st.cn||'');
    '<img class="tw-base" src="a/tw_base.png" alt="">'+
   '</div>';
  t.querySelectorAll('.tf3').forEach(b=>b.onclick=()=>{const d=+b.dataset.d;if(!unlocked(d)){sfx('bad');return toast(lockText(d))}if(!DAYS[d])return toast('Diese Etage wird gerade gebaut.');moveCar(d,()=>openDay(d))});
- $('#crownbtn').onclick=()=>{sfx('static',.5);toast(st.solved[24]?'Der Tresor ist offen.':'Der Tresor. Er öffnet sich an Heiligabend.')};
+ $('#crownbtn').onclick=()=>crownMenu();
  // Fahrstuhl startet unten und fährt zur aktuellen Etage
  const car=$('#tw-car');const fh=()=>$('#tw-fac').offsetHeight/24;
  car.style.transition='none';car.style.top=(23*fh()+4)+'px';car.dataset.d=1;

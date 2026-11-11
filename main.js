@@ -30,7 +30,7 @@ $('#btn-boot').onclick=async()=>{if(booting)return;booting=true;ac();const bt=$(
  bed.stop();tone(988,.12,'triangle',.16);tone(1319,.3,'triangle',.16,.12);await sleep(900);
  await timeReady;await loadGift();goStart()};
 
-async function loadGift(){const g=params.get('g')||(location.hash.startsWith('#g=')?location.hash.slice(3):null);if(g){GIFT=await TZ.unpack(g);if(GIFT){st.ok=1;if(GIFT.cn&&!st.cn)st.cn=GIFT.cn;save()}}}
+async function loadGift(){const g=params.get('g')||(location.hash.startsWith('#g=')?location.hash.slice(3):null);if(g){const n=await TZ.unpack(g);if(n){GIFT=n;st.gift=n;st.ok=1;if(n.cn&&!st.cn)st.cn=n.cn;save()}}if(!GIFT&&st.gift)GIFT=st.gift}
 
 // 1 Start
 function goStart(){
@@ -78,7 +78,8 @@ function renderTower(){$('#tw-kick').textContent='Agent '+(st.cn||'');
  $('#tw-foot').textContent=PROBE?'Testmodus: alle Etagen offen':'Jeden Tag ab 0 Uhr öffnet sich eine neue Etage. Verpasste Etagen kannst du jederzeit nachholen.';
 }
 function lockText(d){const b=berlin();if(b.month===12)return 'öffnet am '+d+'. Dezember';return 'ab 1. Dezember'}
-function countdown(){const n=now(),y=n.getFullYear();const target=new Date(Date.UTC(y,11,23,23,0,0));let ms=target-n;if(ms<0)return 'vorbei';const d=Math.floor(ms/864e5);if(d>=1)return d+' Tage';const h=Math.floor(ms/36e5);return h+' Std'}
+function snTarget(){const n=now(),y=n.getMonth()<2?n.getFullYear()-1:n.getFullYear();return new Date(Date.UTC(y,11,24,23,0,0))}
+function countdown(){const n=now();const target=snTarget();let ms=target-n;if(ms<0)return 'vorbei';const d=Math.floor(ms/864e5);if(d>=1)return d+(d===1?' Tag':' Tage');const h=Math.floor(ms/36e5);return h+' Std'}
 
 // 4 Tag
 let curDay=0;
@@ -104,7 +105,7 @@ function renderHints(){const D=DAYS[curDay],n=st.hint[curDay]||0,h=$('#hints');h
 function confirmSol(b){if(b._c)return true;b._c=1;b.innerHTML='<span class="hk">Lösung mit Erklärung</span>Wirklich? Noch einmal antippen, dann zeige ich die Lösung.';return false}
 $('#btn-check').onclick=check;$('#daycode').addEventListener('keydown',e=>{if(e.key==='Enter')check()});
 async function check(){const v=$('#daycode').value;if(!TZ.norm(v))return;const D=DAYS[curDay],tm=$('#term');tm.classList.remove('bad','ok');void tm.offsetWidth;
- if(D.gate&&!D.gate()){sfx('bad');toast(D.gateMsg||'Noch nicht.');return}if([].concat(D.h).includes(await TZ.hash(v))){tm.classList.add('ok');$('#term-st').textContent='Zugang gewährt';sfx('ok');const first=!st.solved[curDay];st.solved[curDay]=Date.now();save();showReveal(true);if(first&&D.after)runAfter(D.after)}
+ if(D.gate&&!D.gate()){sfx('bad');toast(D.gateMsg||'Noch nicht.');return}const hs=[await TZ.hash(v)],v2=v.replace(/^\s*(der|die|das|ein|eine|einen|dem|den|im|in|am)\s+/i,'').replace(/[.!?]+\s*$/,'');if(v2&&v2!==v)hs.push(await TZ.hash(v2));if(hs.some(x=>[].concat(D.h).includes(x))){tm.classList.add('ok');$('#term-st').textContent='Zugang gewährt';sfx('ok');const first=!st.solved[curDay];st.solved[curDay]=Date.now();save();showReveal(true);if(first&&D.after)runAfter(D.after)}
  else{tm.classList.add('bad');$('#term-st').textContent='Zugriff verweigert';sfx('bad')}}
 function showReveal(play){const D=DAYS[curDay],R=D.reveal,C=CREW[R.who],rv=$('#reveal');
  rv.innerHTML='<div class="rk">Etage '+curDay+' gesichert</div><div class="rd-h" style="margin-top:10px"><div class="rd-p" style="background-image:url('+C.img+')"></div><div><div class="rd-n">'+esc(C.n)+'</div><div class="rd-r">'+esc(C.r)+'</div></div>'+(R.vo?'<button class="vo" id="vo-r"><span class="vi">'+IC.play+'</span><span class="wave">'+'<i></i>'.repeat(5)+'</span></button>':'')+'</div><p>'+T(R.text)+'</p>';

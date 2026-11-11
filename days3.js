@@ -37,7 +37,7 @@ function querSVG(){let s='<svg viewBox="0 0 300 486" class="quer" role="img" ari
   if(sen)s+='<g transform="translate(206 '+(y+9.3).toFixed(1)+')" class="sen"><circle r="6"/><path d="M-11 -6a12 12 0 0 1 0 12M11 -6a12 12 0 0 0 0 12"/></g>';
   const lab={1:'Laderampe',22:'Festsaal',24:'Archiv'}[f];if(lab)s+='<text x="238" y="'+(y+13).toFixed(1)+'" class="lab">'+lab+'</text>'}
  s+='<rect x="96" y="10" width="26" height="452" class="shaft"/><text x="109" y="480" text-anchor="middle" class="fn">KRANICH</text>';
- return s+'<g transform="translate(240 300)" class="legend"><circle r="6" class="sen"/><text x="12" y="4">Melder</text></g></svg>'}
+ return s+'<g transform="translate(196 476)" class="legend"><circle r="6" class="sen"/><text x="12" y="4">Melder</text></g></svg>'}
 
 // Galaprogramm
 const PROG=[['19:00','Empfang im Festsaal mit Champagner und Musik vom Lumen Quartett.'],['20:00','Begrüßung durch Viktor Halden, Gründer und Vorstand der Aurelion AG.'],['20:30','Festliches Menü in vier Gängen, serviert von den Köchen des Turmrestaurants.'],['22:00','Präsentation von Aurelion Home, der Stadt, die zuhört und versteht.'],['23:00','Tanz unter dem Sternenhimmel der Kuppel bis in die frühen Morgenstunden.']];

@@ -706,3 +706,37 @@ canvas.hit{animation:gmhit .4s}@keyframes gmhit{0%,100%{filter:none;transform:no
  html,body{font-size:18.5px}
  .day-in{max-width:780px}
 }
+
+/* ===== Korrekturen 11.11.2026 ===== */
+/* Finale, Sperrbildschirm, Fragment: Inhalt darf länger sein als der Bildschirm */
+.fin,.crash,.frag-o{place-items:start center;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.fin>*,.crash>*,.frag-o>*{margin:auto 0}
+.fin .credits{position:fixed}
+.letter{width:100%;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+.lt-m,.lt-ort span,.letter h2,.lt-v{overflow-wrap:anywhere;word-break:break-word}
+.lt-m{max-width:100%}
+/* Anruf im Querformat scrollbar */
+.call{overflow-y:auto}
+/* Handy quer: Bitte hochkant halten */
+#rot-hint{display:none}
+@media (orientation:landscape) and (max-height:500px) and (pointer:coarse){
+ #rot-hint{display:flex;position:fixed;inset:0;z-index:200;background:#03050a;color:#e8eef8;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font-family:var(--hud)}
+ #rot-hint svg{width:64px;height:64px;margin-bottom:14px;stroke:#3cf2b5;fill:none;stroke-width:1.6;animation:rot-h 2.4s ease-in-out infinite}
+ #rot-hint b{font-size:1.3rem;letter-spacing:.06em}
+ #rot-hint span{color:#9aa8c0;font-family:var(--body,Inter),sans-serif;margin-top:6px;font-size:.95rem}
+}
+@keyframes rot-h{0%,30%{transform:rotate(90deg)}60%,100%{transform:rotate(0)}}
+.crown-m{text-align:center;padding:6px 2px}
+.kp-qr{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center;margin:12px 0;padding:12px;border:1px solid rgba(255,255,255,.1);border-radius:14px}
+.kp-qr #kp-qr{background:#fff;border-radius:10px;padding:6px;line-height:0}
+.kp-qr #kp-qr svg{width:100%;height:auto}
+.kp-qr .btn{display:inline-block;text-decoration:none;margin-top:6px}
+@media (max-width:380px){.kp-qr{grid-template-columns:1fr}.kp-qr #kp-qr{max-width:220px;margin:0 auto}}
+.kp-qr{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center;margin:12px 0;padding:12px;border:1px solid rgba(255,255,255,.1);border-radius:14px}
+.kp-qr #kp-qr{background:#fff;border-radius:10px;padding:6px;line-height:0}
+.kp-qr #kp-qr svg{width:100%;height:auto}
+.kp-qr .btn{display:inline-block;text-decoration:none;margin-top:6px}
+@media (max-width:380px){.kp-qr{grid-template-columns:1fr}.kp-qr #kp-qr{max-width:220px;margin:0 auto}}
+/* Spieloverlay auf kleinen Bildschirmen: oben ausrichten und scrollbar */
+.gm-ov{overflow-y:auto;justify-content:safe center}
+@media (max-width:380px),(max-height:620px){.gm-ov{padding:10px;gap:6px;justify-content:flex-start}.gm-ov p{font-size:.78rem;line-height:1.4}.gm-ov b{font-size:.9rem}.gm-ov .btn{min-width:0;width:100%;padding-left:8px;padding-right:8px}}

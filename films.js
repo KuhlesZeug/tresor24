@@ -8,7 +8,7 @@ window.FILMS={
   subs:[{t:0,x:'Etage 13. Ab hier gibt es keine Gäste mehr.'},{t:4.2,x:'Nur Laser. Sensoren. Und Wachen, die nie müde werden.'},{t:8.9,x:'Und irgendwo in den Leitungen etwas, das uns beobachtet.'},{t:12.9,x:'ECHO. Die Tresor KI. Sie hat uns auf der Gala gesehen.'},{t:17.4,x:'Jetzt müssen wir leiser sein als je zuvor.'}]},
  19:{title:'Akt 4 · Der Tresor',vo:'a/vo_film4.mp3',music:'a/mus_akt4.mp3',len:23,
   slides:[{t:0,img:'a/fv4.jpg',card:'Akt 4 · Der Tresor'},{t:2.8,img:'a/fv1.jpg'},{t:10.5,img:'a/fv2.jpg'},{t:16.1,img:'a/fv3.jpg'}],
-  subs:[{t:0,x:'Sechs Tage bis Heiligabend.'},{t:2.8,x:'Oben im 24. Stock wartet Henriks Tresor.'},{t:6.7,x:'Aber je näher wir kommen, desto lauter wird eine Frage.'},{t:10.5,x:'Wer ist die Schneeeule?'},{t:12.4,x:'Und warum hilft uns die Maschine, die uns jagen sollte?'},{t:16.1,x:'Manche Geheimnisse liegen nicht im Tresor. Sondern in uns.'}]}
+  subs:[{t:0,x:'Fünf Tage bis Heiligabend.'},{t:2.8,x:'Oben im 24. Stock wartet Henriks Tresor.'},{t:6.7,x:'Aber je näher wir kommen, desto lauter wird eine Frage.'},{t:10.5,x:'Wer ist die Schneeeule?'},{t:12.4,x:'Und warum hilft uns die Maschine, die uns jagen sollte?'},{t:16.1,x:'Manche Geheimnisse liegen nicht im Tresor. Sondern in uns.'}]}
 };
 st.films=st.films||{};
 let filmRun2=0;
