@@ -770,3 +770,8 @@ canvas.hit{animation:gmhit .4s}@keyframes gmhit{0%,100%{filter:none;transform:no
 #s-prep .btn.big{width:100%}
 #s-prep{overflow-y:auto;height:100vh;height:100dvh}
 #s-prep .city::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,8,15,.72),rgba(5,8,15,.9) 45%,rgba(5,8,15,.96))}
+.prep-head{position:relative}
+.prep-play{margin-left:auto;display:flex;align-items:center;gap:8px;border:1px solid rgba(60,242,181,.5);background:rgba(60,242,181,.08);color:var(--ink);border-radius:999px;padding:8px 14px;font-family:var(--hud);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase}
+.prep-play i{width:0;height:0;border-left:9px solid var(--nl);border-top:6px solid transparent;border-bottom:6px solid transparent}
+.prep-play.on i{width:9px;height:10px;border:0;border-left:3px solid var(--nl);border-right:3px solid var(--nl)}
+.prep-play.on{box-shadow:0 0 18px rgba(60,242,181,.25)}
