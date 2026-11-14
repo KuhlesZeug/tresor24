@@ -7,6 +7,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const params=new URLSearchParams(location.search);
 const KEY='tz_tresor24_v1';
 
+if(params.get('reset')==='1'){try{Object.keys(localStorage).filter(k=>/tresor24/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}params.delete('reset');try{history.replaceState(null,'',location.pathname+(params.toString()?'?'+params:'')+location.hash)}catch(e){}}
 let st={ok:0,cn:'',sel:'',intro:0,solved:{},hint:{},seen:{},sound:true,frag:{},items:{},glitch:{},calls:{},start:0};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)st=Object.assign(st,s)}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
