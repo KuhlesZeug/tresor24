@@ -752,3 +752,21 @@ canvas.hit{animation:gmhit .4s}@keyframes gmhit{0%,100%{filter:none;transform:no
 @media(min-width:900px){.szene img{aspect-ratio:21/9}}
 
 .dial2{filter:drop-shadow(0 8px 16px rgba(0,0,0,.45))}.dial2 .tk{stroke:#cfd5df;stroke-width:1.6;stroke-linecap:round}.dial2 .tk5{stroke:#f2f5fa;stroke-width:2.4}.dial2 .tn{fill:#f2f5fa;font:700 13px var(--hud);paint-order:stroke;stroke:rgba(0,0,0,.55);stroke-width:2px}.dial2 .d-mark{fill:var(--red);stroke:#2a0a0f;stroke-width:1}
+/* Vorbereitung der Einsatzakte */
+#s-prep .prep{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top)) 20px calc(36px + env(safe-area-inset-bottom))}
+.prep-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.prep-head img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid rgba(60,242,181,.45);box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.prep-who{font-size:.85rem;opacity:.7;margin-top:2px}
+.prep-t{font-family:var(--hud);font-size:1.45rem;letter-spacing:.03em;margin:0 0 10px;line-height:1.2}
+.prep-p{line-height:1.55;opacity:.92;margin:0 0 16px}
+.prep-list{list-style:none;padding:0;margin:0 0 18px;display:flex;flex-direction:column;gap:10px}
+.prep-list li{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer}
+.prep-list b{display:block;margin-bottom:3px}
+.prep-list i{font-style:normal;font-size:.88rem;opacity:.75;line-height:1.45;display:block}
+.prep-chk{flex:0 0 24px;width:24px;height:24px;border-radius:7px;border:1.5px solid rgba(60,242,181,.6);background:transparent;margin-top:2px;position:relative;padding:0}
+.prep-chk.on{background:rgba(60,242,181,.85)}
+.prep-chk.on::after{content:'';position:absolute;left:7px;top:3px;width:6px;height:11px;border:solid #05080f;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.prep-sm{opacity:.7;margin-top:12px;text-align:center}
+#s-prep .btn.big{width:100%}
+#s-prep{overflow-y:auto;height:100vh;height:100dvh}
+#s-prep .city::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,8,15,.72),rgba(5,8,15,.9) 45%,rgba(5,8,15,.96))}
